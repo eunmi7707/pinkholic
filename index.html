@@ -176,6 +176,28 @@
     display: none;
   }
 
+  /* 찜하기 하트 버튼 */
+  .wish {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 34px;
+    height: 34px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #e8d3dc;
+    border-radius: 50%;        /* 동그랗게 */
+    color: #c98aa4;
+    font-size: 17px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+  }
+  /* 찜한 상태 */
+  .wish.on {
+    color: #e0356f;
+    border-color: #e0356f;
+  }
+
   /* BEST 배지 */
   .badge {
     position: absolute;
@@ -350,6 +372,7 @@
 
   <div class="card big" data-category="가방">
     <span class="badge">BEST 1</span>
+    <button class="wish" onclick="toggleWish(this)">♡</button>
     <img class="photo" src="https://images.unsplash.com/photo-1564422170194-896b89110ef8?w=600" alt="플리츠 레더 토트백과 파우치">
     <div class="name">플리츠 레더 토트백</div>
     <div class="old-price">168,000원</div>
@@ -359,6 +382,7 @@
 
   <div class="card" data-category="주얼리">
     <span class="badge">BEST 2</span>
+    <button class="wish" onclick="toggleWish(this)">♡</button>
     <img class="photo" src="https://images.unsplash.com/photo-1617038220319-276d3cfab638?w=600" alt="골드 트위스트 후프 이어링">
     <div class="name">골드 트위스트 이어링</div>
     <div class="old-price">79,000원</div>
@@ -368,6 +392,7 @@
 
   <div class="card" data-category="주얼리">
     <span class="badge">BEST 3</span>
+    <button class="wish" onclick="toggleWish(this)">♡</button>
     <img class="photo" src="https://images.unsplash.com/photo-1611085583191-a3b181a88401?w=600" alt="담수진주 펜던트 네크리스">
     <div class="name">담수진주 펜던트 네크리스</div>
     <div class="old-price">92,000원</div>
@@ -376,6 +401,7 @@
   </div>
 
   <div class="card" data-category="패션소품">
+    <button class="wish" onclick="toggleWish(this)">♡</button>
     <img class="photo" src="https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600" alt="라운드 골드 프레임 선글라스">
     <div class="name">라운드 골드 선글라스</div>
     <div class="old-price">145,000원</div>
@@ -384,6 +410,7 @@
   </div>
 
   <div class="card" data-category="주얼리">
+    <button class="wish" onclick="toggleWish(this)">♡</button>
     <img class="photo" src="https://images.unsplash.com/photo-1608042314453-ae338d80c427?w=600" alt="젬스톤 골드 반지 세트">
     <div class="name">젬스톤 링 세트 (3종)</div>
     <div class="old-price">88,000원</div>
@@ -392,6 +419,7 @@
   </div>
 
   <div class="card" data-category="주얼리">
+    <button class="wish" onclick="toggleWish(this)">♡</button>
     <img class="photo" src="https://images.unsplash.com/photo-1583292650898-7d22cd27ca6f?w=600" alt="골드 뱅글 팔찌 세트">
     <div class="name">골드 뱅글 팔찌 세트</div>
     <div class="old-price">76,000원</div>
@@ -400,6 +428,7 @@
   </div>
 
   <div class="card" data-category="패션소품">
+    <button class="wish" onclick="toggleWish(this)">♡</button>
     <img class="photo" src="https://images.unsplash.com/photo-1760551938129-01da7f950fe1?w=600" alt="베이지 체크 울 머플러 스카프">
     <div class="name">베이지 체크 울 머플러</div>
     <div class="old-price">98,000원</div>
@@ -408,6 +437,7 @@
   </div>
 
   <div class="card" data-category="패션소품">
+    <button class="wish" onclick="toggleWish(this)">♡</button>
     <img class="photo" src="https://images.unsplash.com/photo-1744177762258-c98418b7a4eb?w=600" alt="골드 집게핀 헤어 클립">
     <div class="name">골드 집게핀 헤어 클립</div>
     <div class="old-price">38,000원</div>
@@ -416,6 +446,7 @@
   </div>
 
   <div class="card" data-category="패션소품">
+    <button class="wish" onclick="toggleWish(this)">♡</button>
     <img class="photo" src="https://images.unsplash.com/photo-1678271248004-957a9d32197a?w=600" alt="브라스 참 백 키링">
     <div class="name">브라스 참 백 키링</div>
     <div class="old-price">42,000원</div>
@@ -424,6 +455,7 @@
   </div>
 
   <div class="card hide-on-all" data-category="가방">
+    <button class="wish" onclick="toggleWish(this)">♡</button>
     <img class="photo" src="https://images.unsplash.com/photo-1786872814428-1f0d8d685217?w=600" alt="소프트 레더 미니 숄더백">
     <div class="name">소프트 레더 미니 숄더백</div>
     <div class="old-price">138,000원</div>
@@ -432,6 +464,7 @@
   </div>
 
   <div class="card hide-on-all" data-category="가방">
+    <button class="wish" onclick="toggleWish(this)">♡</button>
     <img class="photo" src="https://images.unsplash.com/photo-1713425886143-6ea8c776bf2d?w=600" alt="크로커다일 패턴 숄더백">
     <div class="name">크로커다일 패턴 숄더백</div>
     <div class="old-price">152,000원</div>
@@ -440,6 +473,7 @@
   </div>
 
   <div class="card hide-on-all" data-category="주얼리">
+    <button class="wish" onclick="toggleWish(this)">♡</button>
     <img class="photo" src="https://images.unsplash.com/photo-1654699991494-892326ee8171?w=600" alt="핑크 진주 목걸이와 귀걸이 세트">
     <div class="name">핑크 진주 목걸이 세트</div>
     <div class="old-price">118,000원</div>
@@ -448,6 +482,7 @@
   </div>
 
   <div class="card hide-on-all" data-category="주얼리">
+    <button class="wish" onclick="toggleWish(this)">♡</button>
     <img class="photo" src="https://images.unsplash.com/photo-1623303179820-de8ec58b03dc?w=600" alt="진주 스터드 귀걸이">
     <div class="name">진주 스터드 귀걸이</div>
     <div class="old-price">62,000원</div>
@@ -534,6 +569,52 @@
     // 3. 방금 누른 버튼만 진하게 표시합니다.
     clickedBtn.classList.add("active");
   }
+
+  // 하트를 누르면 찜하기가 켜지고 꺼집니다.
+  function toggleWish(btn) {
+    var card = btn.parentNode;                        // 하트가 들어있는 카드
+    var name = card.querySelector(".name").textContent; // 상품 이름
+
+    if (btn.classList.contains("on")) {
+      btn.classList.remove("on");
+      btn.textContent = "♡";        // 빈 하트
+      saveWish(name, false);
+    } else {
+      btn.classList.add("on");
+      btn.textContent = "♥";        // 채운 하트
+      saveWish(name, true);
+    }
+  }
+
+  // 찜한 상품을 브라우저에 기억시킵니다. (새로고침해도 남아 있습니다)
+  function saveWish(name, isOn) {
+    try {
+      if (isOn) {
+        localStorage.setItem("wish_" + name, "1");
+      } else {
+        localStorage.removeItem("wish_" + name);
+      }
+    } catch (e) {
+      // 브라우저가 저장을 막아둔 경우에는 그냥 넘어갑니다.
+    }
+  }
+
+  // 페이지를 열 때, 전에 찜해둔 상품의 하트를 다시 채워줍니다.
+  window.onload = function () {
+    var cards = document.getElementsByClassName("card");
+    for (var i = 0; i < cards.length; i++) {
+      var name = cards[i].querySelector(".name").textContent;
+      var btn = cards[i].querySelector(".wish");
+      try {
+        if (localStorage.getItem("wish_" + name) === "1") {
+          btn.classList.add("on");
+          btn.textContent = "♥";
+        }
+      } catch (e) {
+        // 저장된 값을 읽지 못해도 화면은 정상 동작합니다.
+      }
+    }
+  };
 </script>
 
 </body>
