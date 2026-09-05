@@ -105,6 +105,29 @@
     cursor: pointer;
   }
 
+  /* ===== 검색창 ===== */
+  .search {
+    text-align: center;
+    margin-top: 28px;
+  }
+  .search input {
+    width: 320px;
+    max-width: 80%;
+    padding: 12px 16px;
+    font-size: 15px;
+    border: 1px solid #e3c9d4;
+    border-radius: 3px;
+    box-sizing: border-box;
+  }
+  /* 검색 결과가 없을 때 나오는 안내 */
+  .no-result {
+    display: none;              /* 평소에는 숨겨둡니다 */
+    text-align: center;
+    color: #8a7079;
+    font-size: 16px;
+    padding: 40px 20px 0 20px;
+  }
+
   /* ===== 카테고리 버튼 ===== */
   .categories {
     text-align: center;
@@ -177,7 +200,7 @@
   }
 
   /* 찜하기 하트 버튼 */
-  .wish {
+  .card .wish {
     position: absolute;
     top: 12px;
     right: 12px;
@@ -193,7 +216,7 @@
     padding: 0;
   }
   /* 찜한 상태 */
-  .wish.on {
+  .card .wish.on {
     color: #e0356f;
     border-color: #e0356f;
   }
@@ -356,6 +379,11 @@
 <h2 class="section-title">BEST ITEM</h2>
 <p class="section-title-sub">고객님들이 가장 많이 찾으신 상품입니다</p>
 
+
+<!-- 검색창 -->
+<div class="search">
+  <input type="text" id="searchBox" oninput="searchProduct()" placeholder="찾으시는 상품 이름을 입력하세요">
+</div>
 <!-- 카테고리 버튼 -->
 <div class="categories">
   <button class="cat-btn active" onclick="showCategory('전체', this)">전체</button>
@@ -493,6 +521,9 @@
 </div>
 
 
+<!-- 검색 결과가 없을 때 나오는 안내 -->
+<p class="no-result" id="noResult">찾으시는 상품이 없습니다. 다른 이름으로 검색해 보세요.</p>
+
 <!-- 쇼핑몰 소개 -->
 <div class="about">
   <div class="about-inner">
@@ -540,34 +571,57 @@
     alert("준비 중입니다. 조금만 기다려 주세요.");
   }
 
-  // 카테고리 버튼을 누르면 해당 상품만 보여줍니다.
-  // name : 누른 카테고리 이름 / clickedBtn : 방금 누른 버튼
+  // 지금 선택된 카테고리를 기억해 둡니다.
+  var currentCategory = "전체";
+
+  // 카테고리 버튼을 눌렀을 때
   function showCategory(name, clickedBtn) {
+    currentCategory = name;
 
-    // 1. 상품 카드를 하나씩 확인해서 보이거나 숨깁니다.
-    var cards = document.getElementsByClassName("card");
-    for (var i = 0; i < cards.length; i++) {
-
-      // hide-on-all 표시가 붙은 상품은 '전체'에서는 보여주지 않습니다.
-      var hideOnAll = cards[i].classList.contains("hide-on-all");
-
-      if (name === "전체") {
-        cards[i].style.display = hideOnAll ? "none" : "block";
-      } else if (cards[i].getAttribute("data-category") === name) {
-        cards[i].style.display = "block";   // 보이기
-      } else {
-        cards[i].style.display = "none";    // 숨기기
-      }
-    }
-
-    // 2. 모든 버튼의 색을 원래대로 되돌립니다.
+    // 모든 버튼의 색을 원래대로 되돌리고, 방금 누른 버튼만 진하게
     var buttons = document.getElementsByClassName("cat-btn");
     for (var i = 0; i < buttons.length; i++) {
       buttons[i].classList.remove("active");
     }
-
-    // 3. 방금 누른 버튼만 진하게 표시합니다.
     clickedBtn.classList.add("active");
+
+    applyFilter();
+  }
+
+  // 검색창에 글자를 입력할 때
+  function searchProduct() {
+    applyFilter();
+  }
+
+  // 검색어와 카테고리를 함께 따져서 상품을 보여줍니다.
+  function applyFilter() {
+    var keyword = document.getElementById("searchBox").value.trim();
+    var cards = document.getElementsByClassName("card");
+    var shownCount = 0;
+
+    for (var i = 0; i < cards.length; i++) {
+      var name = cards[i].querySelector(".name").textContent;
+      var show;
+
+      if (keyword !== "") {
+        // 검색 중에는 카테고리를 따지지 않고 전체에서 찾습니다.
+        show = name.indexOf(keyword) !== -1;
+      } else if (currentCategory === "전체") {
+        // hide-on-all 표시가 붙은 상품은 '전체'에서 보여주지 않습니다.
+        show = !cards[i].classList.contains("hide-on-all");
+      } else {
+        show = cards[i].getAttribute("data-category") === currentCategory;
+      }
+
+      cards[i].style.display = show ? "block" : "none";
+      if (show) {
+        shownCount++;
+      }
+    }
+
+    // 보여줄 상품이 하나도 없으면 안내 문구를 띄웁니다.
+    var noResult = document.getElementById("noResult");
+    noResult.style.display = (shownCount === 0) ? "block" : "none";
   }
 
   // 하트를 누르면 찜하기가 켜지고 꺼집니다.
