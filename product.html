@@ -161,6 +161,73 @@
     padding: 90px 20px;
     color: #8a7079;
   }
+
+  /* ===== 휴대폰 화면 ===== */
+  @media (max-width: 560px) {
+    .detail {
+      gap: 24px;
+      margin-top: 20px;
+      padding: 0 16px;
+    }
+    .detail-name {
+      font-size: 22px;
+      margin: 8px 0 14px 0;
+    }
+    .detail-price {
+      font-size: 26px;
+      margin-bottom: 18px;
+    }
+    .detail-price .rate {
+      font-size: 17px;
+    }
+    .detail-desc {
+      font-size: 15px;
+      line-height: 1.8;
+      padding-top: 18px;
+      margin-bottom: 18px;
+    }
+    .detail-points li {
+      font-size: 14px;
+    }
+
+    /* 수량 : 합계를 아랫줄로 내려 넉넉하게 */
+    .count-row {
+      flex-wrap: wrap;
+      padding-top: 18px;
+      margin-bottom: 18px;
+    }
+    .count-btn {
+      width: 42px;
+      height: 42px;
+      font-size: 20px;
+    }
+    .count-sum {
+      width: 100%;
+      margin-left: 0;
+      margin-top: 12px;
+      text-align: right;
+    }
+
+    /* 장바구니 버튼을 화면 아래에 붙여둡니다 */
+    .buy-row {
+      position: sticky;
+      bottom: 0;
+      background-color: #faf4f6;
+      padding: 12px 0;
+      margin: 0 -2px;
+    }
+    .buy-row .main-btn {
+      padding: 16px 8px;
+      font-size: 16px;
+    }
+    .buy-row .sub-btn {
+      width: 56px;
+    }
+
+    .back-row {
+      margin-top: 34px;
+    }
+  }
 </style>
 </head>
 

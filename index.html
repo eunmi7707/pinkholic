@@ -126,6 +126,73 @@
     color: #6b5560;
     margin: 0;
   }
+
+  /* ===== 휴대폰 화면 ===== */
+  @media (max-width: 560px) {
+    .banner {
+      padding: 60px 18px;
+    }
+    .banner h2 {
+      font-size: 21px;
+      letter-spacing: 1px;
+      line-height: 1.5;
+    }
+    .banner p {
+      font-size: 15px;
+      margin-bottom: 24px;
+    }
+    .banner button {
+      padding: 14px 30px;
+      font-size: 15px;
+    }
+
+    .search {
+      margin-top: 20px;
+      padding: 0 16px;
+    }
+    .search input {
+      width: 100%;
+      max-width: none;
+      font-size: 16px;   /* 16px 보다 작으면 아이폰에서 화면이 확대됩니다 */
+    }
+
+    /* 카테고리 버튼 : 한 줄에 네 개가 들어가도록 */
+    .categories {
+      margin-top: 16px;
+      padding: 0 12px;
+      display: flex;
+      gap: 6px;
+    }
+    .cat-btn {
+      flex: 1;
+      margin: 0;
+      padding: 11px 4px;
+      font-size: 14px;
+    }
+
+    .about {
+      padding: 45px 18px;
+    }
+    .about h2 {
+      font-size: 20px;
+    }
+    .about-text {
+      font-size: 15px;
+      line-height: 1.9;
+      margin-bottom: 30px;
+    }
+    /* 소개 문장의 줄바꿈은 넓은 화면에서만 씁니다 */
+    .about-text br {
+      display: none;
+    }
+    .about-points {
+      gap: 14px;
+    }
+    .point {
+      width: 100%;
+      padding: 22px 18px;
+    }
+  }
 </style>
 </head>
 

@@ -121,14 +121,79 @@
     max-width: 420px;
   }
 
-  /* 화면이 좁을 때 */
+  /* ===== 휴대폰 화면 ===== */
   @media (max-width: 620px) {
+    .cart-box {
+      margin-top: 26px;
+      padding: 0 14px;
+    }
+
+    /* 사진은 왼쪽, 이름·수량·금액은 오른쪽에 세로로 */
     .cart-item {
       flex-wrap: wrap;
+      gap: 14px;
+      padding: 14px;
+      position: relative;
+    }
+    .cart-item img {
+      width: 78px;
+      height: 78px;
+    }
+    .cart-item .info {
+      flex: 1 1 0;
+      padding-right: 26px;   /* 삭제 버튼 자리 */
+    }
+    .cart-item .info a {
+      font-size: 15px;
+    }
+    /* 삭제 버튼은 오른쪽 위 구석으로 */
+    .cart-item .del {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      font-size: 22px;
+      padding: 4px 6px;
+    }
+    /* 수량과 금액을 아랫줄에 나란히 */
+    .cart-item .count-row {
+      order: 3;
+    }
+    .count-btn {
+      width: 38px;
+      height: 38px;
+      font-size: 18px;
     }
     .cart-item .sum {
+      order: 4;
       width: auto;
       margin-left: auto;
+      font-size: 17px;
+    }
+
+    .total-box {
+      padding: 20px 18px;
+      margin-top: 18px;
+    }
+    .total-line {
+      font-size: 15px;
+    }
+    .total-line.final {
+      font-size: 17px;
+    }
+    .total-line.final b {
+      font-size: 22px;
+    }
+
+    /* 주문 버튼을 화면 아래에 붙여둡니다 */
+    .order-row {
+      position: sticky;
+      bottom: 0;
+      background-color: #faf4f6;
+      padding: 12px 0;
+      margin-top: 18px;
+    }
+    .order-row .main-btn {
+      padding: 16px 10px;
     }
   }
 </style>

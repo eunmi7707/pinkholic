@@ -11,6 +11,17 @@ body {
   color: #3f2c33;
   font-size: 16px;
   line-height: 1.6;
+  -webkit-text-size-adjust: 100%;   /* 휴대폰이 글자 크기를 멋대로 키우지 않게 */
+}
+
+/* 사진이 화면 밖으로 넘치지 않게 합니다 */
+img {
+  max-width: 100%;
+}
+
+/* 휴대폰에서 눌렀을 때 파란 사각형이 생기지 않게 합니다 */
+a, button {
+  -webkit-tap-highlight-color: rgba(185, 85, 122, 0.15);
 }
 
 /* ===== 맨 위 (쇼핑몰 이름) ===== */
@@ -60,10 +71,15 @@ nav {
   background-color: white;
   border-bottom: 1px solid #ecd9e0;
   text-align: center;
-  padding: 18px;
+  padding: 12px 10px;
+  position: sticky;    /* 화면을 내려도 메뉴가 위에 붙어 있습니다 */
+  top: 0;
+  z-index: 20;
 }
 nav a {
-  margin: 0 14px;
+  display: inline-block;
+  margin: 0 4px;
+  padding: 8px 10px;   /* 손가락으로 누르기 좋게 여유를 둡니다 */
   color: #8d4260;
   text-decoration: none;
   font-size: 16px;
@@ -315,14 +331,138 @@ nav a.now {           /* 지금 보고 있는 메뉴 */
   height: 80px;
 }
 
-/* ===== 화면이 좁아지면 칸 수를 줄입니다 ===== */
+/* ============================================================
+   화면이 좁아질 때 (태블릿 · 휴대폰)
+   ============================================================ */
+
+/* --- 태블릿 : 한 줄에 2칸 --- */
 @media (max-width: 900px) {
-  .products { grid-template-columns: repeat(2, 1fr); }
+  .products {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: 30px 16px 50px 16px;
+  }
+  .photo { height: 220px; }
+  .card.big .photo { min-height: 260px; }
 }
+
+/* --- 휴대폰 --- */
 @media (max-width: 560px) {
-  .products { grid-template-columns: 1fr; }
-  .card.big { grid-column: span 1; grid-row: span 1; }
-  nav a { margin: 0 8px; font-size: 15px; }
+  /* 맨 위 제목을 조금 줄입니다 */
+  header {
+    padding: 30px 16px;
+  }
+  header h1 {
+    font-size: 28px;
+    letter-spacing: 2px;
+  }
+  header p {
+    font-size: 14px;
+    margin-top: 10px;
+  }
+
+  /* 메뉴 : 줄바꿈되어도 누르기 편하게 */
+  nav {
+    padding: 8px 6px;
+  }
+  nav a {
+    margin: 2px 0;
+    padding: 8px 9px;
+    font-size: 14px;
+  }
+
+  /* 섹션 제목 */
+  .section-title {
+    font-size: 20px;
+    margin: 40px 0 6px 0;
+  }
+  .section-title-sub {
+    font-size: 14px;
+    padding: 0 20px;
+  }
+
+  /* 상품은 한 줄에 2칸을 유지합니다.
+     1칸으로 만들면 사진이 너무 커져서 스크롤이 길어집니다. */
+  .products {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 24px 12px 40px 12px;
+  }
+  .card {
+    padding: 10px 10px 16px 10px;
+    border-radius: 6px;
+  }
+  .photo {
+    height: 150px;
+  }
+
+  /* 크게 보여줄 상품은 가로 2칸(=한 줄 전체)만 씁니다 */
+  .card.big {
+    grid-column: span 2;
+    grid-row: span 1;
+    display: block;
+  }
+  .card.big .photo {
+    height: 240px;
+    min-height: 0;
+  }
+  .card.big .name  { font-size: 17px; }
+  .card.big .price { font-size: 20px; }
+
+  /* 글자와 버튼 크기 */
+  .name {
+    font-size: 14px;
+    margin: 12px 0 6px 0;
+  }
+  .old-price { font-size: 12px; }
+  .price {
+    font-size: 17px;
+    margin: 2px 0 12px 0;
+  }
+  .rate { font-size: 13px; margin-right: 5px; }
+  .card button {
+    width: 100%;
+    padding: 11px 6px;
+    font-size: 14px;
+  }
+
+  /* 배지와 하트 */
+  .badge {
+    font-size: 11px;
+    padding: 4px 7px;
+    top: 8px;
+    left: 8px;
+  }
+  .card .wish {
+    width: 32px;
+    height: 32px;
+    top: 8px;
+    right: 8px;
+  }
+  .card.big .badge { font-size: 11px; padding: 4px 7px; }
+
+  /* 입력 양식 */
+  .form-box {
+    padding: 26px 20px 22px 20px;
+    margin: 0 16px;
+  }
+  .notice {
+    margin: 0 16px 22px 16px;
+    font-size: 13px;
+  }
+  .field input {
+    font-size: 16px;   /* 16px 보다 작으면 아이폰에서 화면이 확대됩니다 */
+  }
+  .submit-btn {
+    padding: 15px;
+  }
+
+  .main-btn {
+    padding: 14px 26px;
+    font-size: 15px;
+  }
+
+  .bottom-space { height: 40px; }
 }
 
 /* ===== 맨 아래 (연락처) ===== */
@@ -333,4 +473,18 @@ footer {
   padding: 40px 20px;
   font-size: 15px;
   line-height: 2;
+}
+footer a {
+  color: #ffd9e6;
+}
+
+@media (max-width: 560px) {
+  footer {
+    padding: 30px 18px;
+    font-size: 13px;
+    line-height: 1.9;
+  }
+  footer div {
+    margin-bottom: 6px;
+  }
 }

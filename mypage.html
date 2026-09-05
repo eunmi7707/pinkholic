@@ -75,6 +75,47 @@
   .member-inner .buttons a {
     margin-right: 10px;
   }
+
+  /* ===== 휴대폰 화면 ===== */
+  @media (max-width: 560px) {
+    .summary {
+      gap: 10px;
+      margin-top: 26px;
+      padding: 0 14px;
+    }
+    /* 세 칸을 한 줄에 나란히 놓습니다 */
+    .summary-box {
+      flex: 1;
+      width: auto;
+      padding: 16px 6px;
+    }
+    .summary-box .label {
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+    .summary-box .value {
+      font-size: 20px;
+    }
+
+    .member-box {
+      margin-top: 26px;
+      padding: 0 14px;
+    }
+    .member-inner {
+      padding: 20px 18px;
+    }
+    .member-line {
+      font-size: 14px;
+    }
+    .member-line .key {
+      width: 78px;
+    }
+    .member-inner .buttons a {
+      display: block;
+      margin: 0 0 10px 0;
+      text-align: center;
+    }
+  }
 </style>
 </head>
 
