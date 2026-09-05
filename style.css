@@ -88,6 +88,22 @@ nav a.now {           /* 지금 보고 있는 메뉴 */
   color: #b9557a;
   font-weight: bold;
 }
+/* 장바구니 개수 : 동그란 표시 */
+#cartCount {
+  display: inline-block;
+  min-width: 18px;
+  margin-left: 5px;
+  background-color: #b9557a;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 18px;
+  text-align: center;
+  border-radius: 9px;
+  padding: 0 4px;
+  vertical-align: 1px;
+  box-sizing: border-box;
+}
 
 /* ===== 섹션 제목 ===== */
 .section-title {
@@ -361,14 +377,33 @@ nav a.now {           /* 지금 보고 있는 메뉴 */
     margin-top: 10px;
   }
 
-  /* 메뉴 : 줄바꿈되어도 누르기 편하게 */
+  /* 메뉴 : 다섯 개를 한 줄에 나란히 놓습니다 */
   nav {
-    padding: 8px 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;        /* 줄바꿈 없이 한 줄 유지 */
+    overflow-x: auto;         /* 아주 좁은 화면에서만 옆으로 밀 수 있게 */
+    padding: 6px 6px;
+    scrollbar-width: none;    /* 스크롤 막대는 숨깁니다 */
+  }
+  nav::-webkit-scrollbar {
+    display: none;
   }
   nav a {
-    margin: 2px 0;
-    padding: 8px 9px;
-    font-size: 14px;
+    flex: 0 0 auto;
+    white-space: nowrap;      /* 글자가 중간에 잘리지 않게 */
+    margin: 0;
+    padding: 9px 4px;
+    font-size: 13px;
+  }
+  #cartCount {
+    min-width: 16px;
+    margin-left: 3px;
+    font-size: 11px;
+    line-height: 16px;
+    border-radius: 8px;
+    padding: 0 3px;
   }
 
   /* 섹션 제목 */
