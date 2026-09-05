@@ -246,6 +246,55 @@
     cursor: pointer;
   }
 
+  /* ===== 쇼핑몰 소개 ===== */
+  .about {
+    background-color: #f6ecf1;
+    padding: 70px 20px;
+  }
+  .about-inner {
+    max-width: 900px;
+    margin: 0 auto;      /* 가운데 정렬 */
+    text-align: center;
+  }
+  .about h2 {
+    font-size: 24px;
+    font-weight: normal;
+    letter-spacing: 3px;
+    margin: 0 0 18px 0;
+  }
+  .about-text {
+    font-size: 16px;
+    line-height: 2;
+    color: #6b5560;
+    margin: 0 0 45px 0;
+  }
+  /* 소개 3칸 */
+  .about-points {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 22px;
+  }
+  .point {
+    background-color: white;
+    border: 1px solid #e8d3dc;
+    border-radius: 4px;
+    width: 270px;
+    box-sizing: border-box;
+    padding: 28px 22px;
+  }
+  .point h3 {
+    font-size: 17px;
+    color: #b9557a;
+    margin: 0 0 10px 0;
+  }
+  .point p {
+    font-size: 15px;
+    line-height: 1.8;
+    color: #6b5560;
+    margin: 0;
+  }
+
   /* ===== 맨 아래 (연락처) ===== */
   footer {
     background-color: #3f2c33;
@@ -408,6 +457,40 @@
 
 </div>
 
+
+<!-- 쇼핑몰 소개 -->
+<div class="about">
+  <div class="about-inner">
+
+    <h2>ABOUT PINKHOLIC</h2>
+    <p class="about-text">
+      핑크홀릭은 매일 쓰는 물건일수록 오래 두고 쓸 만해야 한다고 생각합니다.<br>
+      유행을 따라가기보다, 몇 해가 지나도 손이 가는 것들만 골라 담았습니다.<br>
+      가방 하나, 귀걸이 한 쌍이 하루의 기분을 바꿔 놓는다는 걸 알기에<br>
+      직접 보고 만져본 상품만 소개합니다.
+    </p>
+
+    <div class="about-points">
+
+      <div class="point">
+        <h3>골라 담은 상품</h3>
+        <p>담당자가 실물을 확인한 상품만 등록합니다. 마감과 소재를 먼저 보고, 사진보다 실물이 나은 것만 남깁니다.</p>
+      </div>
+
+      <div class="point">
+        <h3>당일 출고</h3>
+        <p>평일 오후 2시 이전 주문은 당일 출고합니다. 3만원 이상 무료배송이며, 포장은 선물용 상자에 담아 보내드립니다.</p>
+      </div>
+
+      <div class="point">
+        <h3>일주일 교환·반품</h3>
+        <p>받으신 날부터 7일 이내 교환·반품이 가능합니다. 색이나 크기가 생각과 다르면 편하게 연락 주세요.</p>
+      </div>
+
+    </div>
+
+  </div>
+</div>
 <!-- 맨 아래: 연락처 -->
 <footer>
   <div>고객센터 010-123-4567 &nbsp;|&nbsp; 평일 10:00 ~ 18:00 (주말·공휴일 휴무)</div>
