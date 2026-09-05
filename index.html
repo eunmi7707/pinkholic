@@ -119,13 +119,15 @@
     border-radius: 3px;
     box-sizing: border-box;
   }
-  /* 검색 결과가 없을 때 나오는 안내 */
+  /* 찾는 상품이 없을 때 나오는 안내 */
   .no-result {
-    display: none;              /* 평소에는 숨겨둡니다 */
+    display: none;          /* 평소에는 숨겨둡니다 */
+    grid-column: 1 / -1;    /* 칸을 나누지 않고 한 줄 전체를 씁니다 */
     text-align: center;
     color: #8a7079;
     font-size: 16px;
-    padding: 40px 20px 0 20px;
+    margin: 0;
+    padding: 20px;
   }
 
   /* ===== 카테고리 버튼 ===== */
@@ -518,11 +520,11 @@
     <button onclick="showAlert()">장바구니 담기</button>
   </div>
 
+  <!-- 찾는 상품이 없을 때 나오는 안내 -->
+  <p class="no-result" id="noResult">찾으시는 상품이 없습니다. 다른 이름으로 검색해 보세요.</p>
 </div>
 
 
-<!-- 검색 결과가 없을 때 나오는 안내 -->
-<p class="no-result" id="noResult">찾으시는 상품이 없습니다. 다른 이름으로 검색해 보세요.</p>
 
 <!-- 쇼핑몰 소개 -->
 <div class="about">
