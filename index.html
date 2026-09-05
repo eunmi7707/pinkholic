@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>핑크홀릭 - 어른의 반짝임, 감성 잡화</title>
+
+<style>
+  /* ===== 기본 설정 ===== */
+  body {
+    margin: 0;
+    font-family: "맑은 고딕", sans-serif;
+    background-color: #faf4f6;   /* 아주 연한 로즈 */
+    color: #3f2c33;
+    font-size: 16px;             /* 글씨를 조금 크게 (읽기 편하게) */
+    line-height: 1.6;
+  }
+
+  /* ===== 맨 위 (쇼핑몰 이름) ===== */
+  header {
+    background-color: #b9557a;   /* 차분한 로즈 핑크 */
+    color: white;
+    text-align: center;
+    padding: 45px 20px;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 38px;
+    letter-spacing: 4px;         /* 글자 사이를 띄워 고급스럽게 */
+    font-weight: normal;
+  }
+  header p {
+    margin: 14px 0 0 0;
+    font-size: 16px;
+    color: #f7dde6;
+  }
+
+  /* ===== 메뉴 ===== */
+  nav {
+    background-color: white;
+    border-bottom: 1px solid #ecd9e0;
+    text-align: center;
+    padding: 18px;
+  }
+  nav a {
+    margin: 0 20px;
+    color: #8d4260;
+    text-decoration: none;
+    font-size: 16px;
+  }
+
+  /* ===== 큰 배너 ===== */
+  .banner {
+    /* 어두운 막(linear-gradient) + 백화점 사진을 겹쳐서 글씨가 잘 보이게 합니다 */
+    background-image:
+      linear-gradient(rgba(45, 28, 35, 0.62), rgba(45, 28, 35, 0.62)),
+      url("https://images.unsplash.com/photo-1766847733845-330a163ab279?w=1600");
+    background-size: cover;       /* 사진을 화면 폭에 꽉 채웁니다 */
+    background-position: center;  /* 가운데를 기준으로 자릅니다 */
+    color: white;
+    text-align: center;
+    padding: 120px 20px;
+  }
+  .banner h2 {
+    font-size: 30px;
+    font-weight: normal;
+    letter-spacing: 2px;
+    margin: 0 0 14px 0;
+  }
+  .banner p {
+    font-size: 17px;
+    color: #f2e6ea;
+    margin: 0 0 32px 0;
+  }
+  .banner button {
+    background-color: #b9557a;
+    color: white;
+    border: none;
+    padding: 16px 46px;
+    font-size: 16px;
+    letter-spacing: 2px;
+    border-radius: 4px;          /* 각진 버튼이 더 단정합니다 */
+    cursor: pointer;
+  }
+
+  /* ===== 카테고리 버튼 ===== */
+  .categories {
+    text-align: center;
+    margin-top: 26px;
+  }
+  .cat-btn {
+    background-color: white;
+    color: #8d4260;
+    border: 1px solid #e3c9d4;
+    padding: 10px 24px;
+    margin: 0 4px;
+    font-size: 15px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  /* 지금 선택된 버튼 */
+  .cat-btn.active {
+    background-color: #b9557a;
+    color: white;
+    border-color: #b9557a;
+  }
+
+  /* ===== 상품 카드 ===== */
+  .products {
+    display: grid;                        /* 바둑판처럼 칸을 나눕니다 */
+    grid-template-columns: repeat(4, 1fr);/* 한 줄에 4칸 */
+    gap: 28px;
+    padding: 40px 20px 70px 20px;
+    max-width: 1150px;
+    margin: 0 auto;      /* 화면 가운데로 정렬합니다 */
+  }
+  .card {
+    background-color: white;
+    position: relative;       /* BEST 배지를 카드 위에 얹기 위한 기준점 */
+    border: 1px solid #ecd9e0;
+    border-radius: 4px;
+    box-sizing: border-box;   /* 테두리와 안쪽 여백까지 폭 안에 포함시킵니다 */
+    text-align: center;
+    padding: 20px 20px 28px 20px;
+  }
+
+  /* BEST 1 상품 : 가로 2칸 + 세로 2칸을 차지하는 큰 카드 */
+  .card.big {
+    grid-column: span 2;
+    grid-row: span 2;
+    display: flex;
+    flex-direction: column;   /* 사진이 남는 높이를 채우도록 */
+  }
+  .card.big .photo {
+    flex: 1;
+    height: auto;
+    min-height: 320px;
+  }
+  .card.big .name  { font-size: 22px; }
+  .card.big .price { font-size: 26px; }
+  .card.big .badge { font-size: 14px; padding: 7px 14px; }
+
+  /* 화면이 좁아지면 칸 수를 줄입니다 */
+  @media (max-width: 900px) {
+    .products { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .products { grid-template-columns: 1fr; }
+    .card.big { grid-column: span 1; grid-row: span 1; }
+  }
+
+  /* BEST 배지 */
+  .badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background-color: #b9557a;
+    color: white;
+    font-size: 12px;
+    letter-spacing: 2px;
+    padding: 5px 10px;
+    border-radius: 2px;
+  }
+
+  /* 섹션 제목 */
+  .section-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: normal;
+    letter-spacing: 3px;
+    margin: 70px 0 6px 0;
+  }
+  .section-title-sub {
+    text-align: center;
+    font-size: 15px;
+    color: #8a7079;
+    margin: 0;
+  }
+
+  /* 상품 사진 : 크기를 똑같이 맞춰줍니다 */
+  .photo {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;   /* 사진이 찌그러지지 않게 잘라서 채웁니다 */
+    border-radius: 3px;
+    display: block;
+  }
+
+  .name {
+    font-size: 17px;
+    margin: 18px 0 10px 0;
+  }
+  .old-price {
+    color: #a99aa0;
+    text-decoration: line-through;
+    font-size: 14px;
+  }
+  /* 할인율 표시 */
+  .rate {
+    color: #d1436a;
+    font-size: 15px;
+    font-weight: bold;
+    margin-right: 8px;
+  }
+
+  .price {
+    color: #b9557a;
+    font-size: 21px;
+    font-weight: bold;
+    margin: 4px 0 18px 0;
+  }
+  .card button {
+    background-color: white;
+    color: #b9557a;
+    border: 1px solid #b9557a;
+    padding: 11px 30px;
+    font-size: 15px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  /* ===== 맨 아래 (연락처) ===== */
+  footer {
+    background-color: #3f2c33;
+    color: #e8dbe0;
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 15px;
+    line-height: 2;
+  }
+</style>
+</head>
+
+<body>
+
+<!-- 맨 위: 쇼핑몰 이름과 소개 -->
+<header>
+  <h1>PINKHOLIC</h1>
+  <p>매일의 나를 조금 더 빛나게, 어른을 위한 감성 잡화</p>
+</header>
+
+<!-- 메뉴 4개 -->
+<nav>
+  <a href="#">신상품</a>
+  <a href="#">베스트</a>
+  <a href="#">기획전</a>
+  <a href="#">고객센터</a>
+</nav>
+
+<!-- 큰 배너 -->
+<div class="banner">
+  <h2>가을 기획전 &middot; 전 상품 19% 할인</h2>
+  <p>오래 두고 쓰는 것들만 골랐습니다. 3만원 이상 무료배송.</p>
+  <button onclick="showAlert()">기획전 보러가기</button>
+</div>
+
+<!-- 상품 목록 제목 -->
+<h2 class="section-title">BEST ITEM</h2>
+<p class="section-title-sub">고객님들이 가장 많이 찾으신 상품입니다</p>
+
+<!-- 카테고리 버튼 -->
+<div class="categories">
+  <button class="cat-btn active" onclick="showCategory('전체', this)">전체</button>
+  <button class="cat-btn" onclick="showCategory('가방', this)">가방</button>
+  <button class="cat-btn" onclick="showCategory('주얼리', this)">주얼리</button>
+  <button class="cat-btn" onclick="showCategory('패션소품', this)">패션소품</button>
+</div>
+
+<!-- 상품 카드 11개 -->
+<!-- 사진을 바꾸려면 src="..." 안의 주소만 바꾸면 됩니다.
+     내 사진을 쓰려면 이 index.html 과 같은 폴더에 사진을 넣고
+     src="사진이름.jpg" 처럼 파일 이름만 적어주세요. -->
+<div class="products">
+
+  <div class="card big" data-category="가방">
+    <span class="badge">BEST 1</span>
+    <img class="photo" src="https://images.unsplash.com/photo-1564422170194-896b89110ef8?w=600" alt="플리츠 레더 토트백과 파우치">
+    <div class="name">플리츠 레더 토트백</div>
+    <div class="old-price">168,000원</div>
+    <div class="price"><span class="rate">19%</span>136,000원</div>
+    <button onclick="showAlert()">장바구니 담기</button>
+  </div>
+
+  <div class="card" data-category="주얼리">
+    <span class="badge">BEST 2</span>
+    <img class="photo" src="https://images.unsplash.com/photo-1617038220319-276d3cfab638?w=600" alt="골드 트위스트 후프 이어링">
+    <div class="name">골드 트위스트 이어링</div>
+    <div class="old-price">79,000원</div>
+    <div class="price"><span class="rate">19%</span>63,900원</div>
+    <button onclick="showAlert()">장바구니 담기</button>
+  </div>
+
+  <div class="card" data-category="주얼리">
+    <span class="badge">BEST 3</span>
+    <img class="photo" src="https://images.unsplash.com/photo-1611085583191-a3b181a88401?w=600" alt="담수진주 펜던트 네크리스">
+    <div class="name">담수진주 펜던트 네크리스</div>
+    <div class="old-price">92,000원</div>
+    <div class="price"><span class="rate">19%</span>74,500원</div>
+    <button onclick="showAlert()">장바구니 담기</button>
+  </div>
+
+  <div class="card" data-category="패션소품">
+    <img class="photo" src="https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600" alt="라운드 골드 프레임 선글라스">
+    <div class="name">라운드 골드 선글라스</div>
+    <div class="old-price">145,000원</div>
+    <div class="price"><span class="rate">19%</span>117,400원</div>
+    <button onclick="showAlert()">장바구니 담기</button>
+  </div>
+
+  <div class="card" data-category="주얼리">
+    <img class="photo" src="https://images.unsplash.com/photo-1608042314453-ae338d80c427?w=600" alt="젬스톤 골드 반지 세트">
+    <div class="name">젬스톤 링 세트 (3종)</div>
+    <div class="old-price">88,000원</div>
+    <div class="price"><span class="rate">19%</span>71,200원</div>
+    <button onclick="showAlert()">장바구니 담기</button>
+  </div>
+
+  <div class="card" data-category="주얼리">
+    <img class="photo" src="https://images.unsplash.com/photo-1583292650898-7d22cd27ca6f?w=600" alt="골드 뱅글 팔찌 세트">
+    <div class="name">골드 뱅글 팔찌 세트</div>
+    <div class="old-price">76,000원</div>
+    <div class="price"><span class="rate">19%</span>61,500원</div>
+    <button onclick="showAlert()">장바구니 담기</button>
+  </div>
+
+  <div class="card" data-category="패션소품">
+    <img class="photo" src="https://images.unsplash.com/photo-1760551938129-01da7f950fe1?w=600" alt="베이지 체크 울 머플러 스카프">
+    <div class="name">베이지 체크 울 머플러</div>
+    <div class="old-price">98,000원</div>
+    <div class="price"><span class="rate">19%</span>79,300원</div>
+    <button onclick="showAlert()">장바구니 담기</button>
+  </div>
+
+  <div class="card" data-category="패션소품">
+    <img class="photo" src="https://images.unsplash.com/photo-1744177762258-c98418b7a4eb?w=600" alt="골드 집게핀 헤어 클립">
+    <div class="name">골드 집게핀 헤어 클립</div>
+    <div class="old-price">38,000원</div>
+    <div class="price"><span class="rate">19%</span>30,700원</div>
+    <button onclick="showAlert()">장바구니 담기</button>
+  </div>
+
+  <div class="card" data-category="패션소품">
+    <img class="photo" src="https://images.unsplash.com/photo-1678271248004-957a9d32197a?w=600" alt="브라스 참 백 키링">
+    <div class="name">브라스 참 백 키링</div>
+    <div class="old-price">42,000원</div>
+    <div class="price"><span class="rate">19%</span>34,000원</div>
+    <button onclick="showAlert()">장바구니 담기</button>
+  </div>
+
+  <div class="card" data-category="가방">
+    <img class="photo" src="https://images.unsplash.com/photo-1786872814428-1f0d8d685217?w=600" alt="소프트 레더 미니 숄더백">
+    <div class="name">소프트 레더 미니 숄더백</div>
+    <div class="old-price">138,000원</div>
+    <div class="price"><span class="rate">19%</span>111,700원</div>
+    <button onclick="showAlert()">장바구니 담기</button>
+  </div>
+
+  <div class="card" data-category="가방">
+    <img class="photo" src="https://images.unsplash.com/photo-1713425886143-6ea8c776bf2d?w=600" alt="크로커다일 패턴 숄더백">
+    <div class="name">크로커다일 패턴 숄더백</div>
+    <div class="old-price">152,000원</div>
+    <div class="price"><span class="rate">19%</span>123,100원</div>
+    <button onclick="showAlert()">장바구니 담기</button>
+  </div>
+
+</div>
+
+<!-- 맨 아래: 연락처 -->
+<footer>
+  <div>고객센터 010-123-4567 &nbsp;|&nbsp; 평일 10:00 ~ 18:00 (주말·공휴일 휴무)</div>
+  <div>이메일 help@pinkholic.com &nbsp;|&nbsp; 카카오톡 채널 @핑크홀릭</div>
+  <div>교환 · 반품은 받으신 날부터 7일 이내 가능합니다.</div>
+  <div>&copy; 2026 PINKHOLIC</div>
+</footer>
+
+<script>
+  // 버튼을 누르면 알림창이 뜹니다.
+  function showAlert() {
+    alert("준비 중입니다. 조금만 기다려 주세요.");
+  }
+
+  // 카테고리 버튼을 누르면 해당 상품만 보여줍니다.
+  // name : 누른 카테고리 이름 / clickedBtn : 방금 누른 버튼
+  function showCategory(name, clickedBtn) {
+
+    // 1. 상품 카드를 하나씩 확인해서 보이거나 숨깁니다.
+    var cards = document.getElementsByClassName("card");
+    for (var i = 0; i < cards.length; i++) {
+      if (name === "전체" || cards[i].getAttribute("data-category") === name) {
+        cards[i].style.display = "block";   // 보이기
+      } else {
+        cards[i].style.display = "none";    // 숨기기
+      }
+    }
+
+    // 2. 모든 버튼의 색을 원래대로 되돌립니다.
+    var buttons = document.getElementsByClassName("cat-btn");
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].classList.remove("active");
+    }
+
+    // 3. 방금 누른 버튼만 진하게 표시합니다.
+    clickedBtn.classList.add("active");
+  }
+</script>
+
+</body>
+</html>
