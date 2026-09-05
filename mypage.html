@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마이페이지 - 핑크홀릭</title>
+
+<style>
+  /* ===== 기본 설정 ===== */
+  body {
+    margin: 0;
+    font-family: "맑은 고딕", sans-serif;
+    background-color: #faf4f6;
+    color: #3f2c33;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  /* ===== 맨 위 (쇼핑몰 이름) ===== */
+  header {
+    /* 펄 느낌 핑크 : 밝은 핑크와 진한 핑크를 여러 번 섞어 진주처럼 반짝이게 합니다 */
+    background-image: linear-gradient(
+      115deg,
+      #f6bcd4 0%,
+      #ffeaf2 14%,
+      #eda9c6 28%,
+      #fff7fa 42%,
+      #e893b7 56%,
+      #ffe3ee 70%,
+      #f0aecb 85%,
+      #fff1f6 100%
+    );
+    background-size: 220% 100%;
+    animation: pearl 9s ease-in-out infinite;
+    color: #8e3a5e;
+    text-align: center;
+    padding: 45px 20px;
+  }
+  @keyframes pearl {
+    0%   { background-position:   0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position:   0% 50%; }
+  }
+  header h1 {
+    margin: 0;
+    font-size: 38px;
+    letter-spacing: 4px;
+    font-weight: normal;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+  header h1 a {
+    color: #8e3a5e;
+    text-decoration: none;
+  }
+  header p {
+    margin: 14px 0 0 0;
+    font-size: 16px;
+    color: #96566f;
+  }
+
+  /* ===== 메뉴 ===== */
+  nav {
+    background-color: white;
+    border-bottom: 1px solid #ecd9e0;
+    text-align: center;
+    padding: 18px;
+  }
+  nav a {
+    margin: 0 20px;
+    color: #8d4260;
+    text-decoration: none;
+    font-size: 16px;
+  }
+  nav a.now {           /* 지금 보고 있는 메뉴 */
+    color: #b9557a;
+    font-weight: bold;
+  }
+
+  /* ===== 페이지 제목 ===== */
+  .page-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: normal;
+    letter-spacing: 3px;
+    margin: 60px 0 6px 0;
+  }
+  .page-title-sub {
+    text-align: center;
+    font-size: 15px;
+    color: #8a7079;
+    margin: 0;
+  }
+
+  /* ===== 내 정보 3칸 ===== */
+  .summary {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 22px;
+    max-width: 900px;
+    margin: 40px auto 0 auto;
+    padding: 0 20px;
+  }
+  .summary-box {
+    background-color: white;
+    border: 1px solid #ecd9e0;
+    border-radius: 4px;
+    width: 270px;
+    box-sizing: border-box;
+    padding: 26px 20px;
+    text-align: center;
+  }
+  .summary-box .label {
+    font-size: 15px;
+    color: #8a7079;
+    margin-bottom: 10px;
+  }
+  .summary-box .value {
+    font-size: 28px;
+    color: #b9557a;
+    font-weight: bold;
+  }
+
+  /* ===== 찜한 상품 목록 ===== */
+  .wish-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+    max-width: 1150px;
+    margin: 0 auto;
+    padding: 40px 20px 70px 20px;
+  }
+  .card {
+    background-color: white;
+    position: relative;
+    border: 1px solid #ecd9e0;
+    border-radius: 4px;
+    box-sizing: border-box;
+    text-align: center;
+    padding: 20px 20px 28px 20px;
+  }
+  .photo {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+    border-radius: 3px;
+    display: block;
+  }
+  .name {
+    font-size: 17px;
+    margin: 18px 0 10px 0;
+  }
+  .old-price {
+    color: #a99aa0;
+    text-decoration: line-through;
+    font-size: 14px;
+  }
+  .price {
+    color: #b9557a;
+    font-size: 21px;
+    font-weight: bold;
+    margin: 4px 0 18px 0;
+  }
+  .rate {
+    color: #d1436a;
+    font-size: 15px;
+    font-weight: bold;
+    margin-right: 8px;
+  }
+  .card button {
+    background-color: white;
+    color: #b9557a;
+    border: 1px solid #b9557a;
+    padding: 11px 30px;
+    font-size: 15px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  /* 찜 해제 버튼 (오른쪽 위 동그라미) */
+  .card .remove {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 34px;
+    height: 34px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #e0356f;
+    border-radius: 50%;
+    color: #e0356f;
+    font-size: 17px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  /* 찜한 상품이 없을 때 */
+  .empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #8a7079;
+    padding: 60px 20px;
+  }
+  .empty a {
+    display: inline-block;
+    margin-top: 18px;
+    background-color: #b9557a;
+    color: white;
+    text-decoration: none;
+    padding: 13px 32px;
+    border-radius: 3px;
+  }
+
+  /* 화면이 좁아지면 칸 수를 줄입니다 */
+  @media (max-width: 900px) {
+    .wish-list { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .wish-list { grid-template-columns: 1fr; }
+  }
+
+  /* ===== 맨 아래 (연락처) ===== */
+  footer {
+    background-color: #3f2c33;
+    color: #e8dbe0;
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 15px;
+    line-height: 2;
+  }
+</style>
+</head>
+
+<body>
+
+<!-- 맨 위 -->
+<header>
+  <h1><a href="index.html">PINKHOLIC</a></h1>
+  <p>매일의 나를 조금 더 빛나게, 어른을 위한 감성 잡화</p>
+</header>
+
+<!-- 메뉴 -->
+<nav>
+  <a href="index.html">신상품</a>
+  <a href="index.html">베스트</a>
+  <a href="index.html">기획전</a>
+  <a href="join.html">회원가입</a>
+  <a href="mypage.html" class="now">마이페이지</a>
+  <a href="index.html">고객센터</a>
+</nav>
+
+<!-- 페이지 제목 -->
+<h2 class="page-title">MY PAGE</h2>
+<p class="page-title-sub" id="greeting">찜한 상품을 모아서 보실 수 있습니다</p>
+
+<!-- 내 정보 3칸 -->
+<div class="summary">
+  <div class="summary-box">
+    <div class="label">찜한 상품</div>
+    <div class="value" id="wishCount">0</div>
+  </div>
+  <div class="summary-box">
+    <div class="label">찜한 상품 합계</div>
+    <div class="value" id="wishTotal">0원</div>
+  </div>
+  <div class="summary-box">
+    <div class="label" id="memberLabel">적립금</div>
+    <div class="value" id="memberValue">0원</div>
+  </div>
+</div>
+
+<!-- 찜한 상품 목록 (자바스크립트가 채웁니다) -->
+<div class="wish-list" id="wishList"></div>
+
+<!-- 맨 아래: 연락처 -->
+<footer>
+  <div>고객센터 010-123-4567 &nbsp;|&nbsp; 평일 10:00 ~ 18:00 (주말·공휴일 휴무)</div>
+  <div>이메일 help@pinkholic.com &nbsp;|&nbsp; 카카오톡 채널 @핑크홀릭</div>
+  <div>교환 · 반품은 받으신 날부터 7일 이내 가능합니다.</div>
+  <div>&copy; 2026 PINKHOLIC</div>
+</footer>
+
+<script>
+  // 첫 화면에서 하트를 누른 상품이 여기에 저장되어 있습니다.
+  var WISH_KEY = "pinkholic_wish";
+
+  // 회원가입 페이지에서 저장한 회원 정보
+  var MEMBER_KEY = "pinkholic_member";
+
+  // 가입한 회원이면 이름으로 인사하고, 가입일을 보여줍니다.
+  function showMember() {
+    var member = null;
+    try {
+      member = JSON.parse(localStorage.getItem(MEMBER_KEY));
+    } catch (e) {
+      member = null;
+    }
+
+    if (member) {
+      document.getElementById("greeting").textContent =
+        member.name + "님, 안녕하세요. 찜한 상품을 모아서 보실 수 있습니다.";
+      document.getElementById("memberLabel").textContent = "가입일";
+      document.getElementById("memberValue").textContent = member.joinedAt;
+      document.getElementById("memberValue").style.fontSize = "20px";
+    }
+  }
+
+  // 저장된 찜 목록을 읽어옵니다.
+  function loadWishList() {
+    try {
+      return JSON.parse(localStorage.getItem(WISH_KEY)) || [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  // 찜 목록을 저장합니다.
+  function saveWishList(list) {
+    try {
+      localStorage.setItem(WISH_KEY, JSON.stringify(list));
+    } catch (e) {
+      // 저장이 안 되어도 화면은 정상 동작합니다.
+    }
+  }
+
+  // "19%123,100원" 같은 글자에서 금액만 숫자로 뽑아냅니다.
+  function toNumber(priceText) {
+    var match = priceText.match(/([0-9,]+)원/);
+    if (match) {
+      return parseInt(match[1].replace(/,/g, ""), 10);
+    }
+    return 0;
+  }
+
+  // 1234567 -> "1,234,567"
+  function addComma(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  // 찜 목록을 화면에 그립니다.
+  function drawWishList() {
+    var list = loadWishList();
+    var box = document.getElementById("wishList");
+    var total = 0;
+
+    box.innerHTML = "";   // 먼저 비우고 다시 그립니다.
+
+    if (list.length === 0) {
+      box.innerHTML =
+        '<div class="empty">' +
+        '아직 찜한 상품이 없습니다.<br>' +
+        '마음에 드는 상품의 하트를 눌러보세요.' +
+        '<br><a href="index.html">상품 보러 가기</a>' +
+        '</div>';
+    }
+
+    for (var i = 0; i < list.length; i++) {
+      var item = list[i];
+      total += toNumber(item.price);
+
+      // 카드를 하나 만들어서 목록에 넣습니다.
+      var card = document.createElement("div");
+      card.className = "card";
+
+      var removeBtn = document.createElement("button");
+      removeBtn.className = "remove";
+      removeBtn.textContent = "♥";
+      removeBtn.setAttribute("data-name", item.name);
+      removeBtn.onclick = function () {
+        removeWish(this.getAttribute("data-name"));
+      };
+
+      var img = document.createElement("img");
+      img.className = "photo";
+      img.src = item.img;
+      img.alt = item.name;
+
+      var name = document.createElement("div");
+      name.className = "name";
+      name.textContent = item.name;
+
+      var oldPrice = document.createElement("div");
+      oldPrice.className = "old-price";
+      oldPrice.textContent = item.oldPrice;
+
+      var price = document.createElement("div");
+      price.className = "price";
+      price.textContent = item.price;
+
+      var cartBtn = document.createElement("button");
+      cartBtn.textContent = "장바구니 담기";
+      cartBtn.onclick = showAlert;
+
+      card.appendChild(removeBtn);
+      card.appendChild(img);
+      card.appendChild(name);
+      card.appendChild(oldPrice);
+      card.appendChild(price);
+      card.appendChild(cartBtn);
+
+      box.appendChild(card);
+    }
+
+    document.getElementById("wishCount").textContent = list.length;
+    document.getElementById("wishTotal").textContent = addComma(total) + "원";
+  }
+
+  // 하트를 다시 누르면 찜을 해제합니다.
+  function removeWish(name) {
+    var list = loadWishList();
+    var newList = [];
+
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].name !== name) {
+        newList.push(list[i]);
+      }
+    }
+
+    saveWishList(newList);
+    drawWishList();       // 목록을 다시 그립니다.
+  }
+
+  function showAlert() {
+    alert("준비 중입니다. 조금만 기다려 주세요.");
+  }
+
+  // 페이지를 열면 회원 정보와 찜 목록을 보여줍니다.
+  window.onload = function () {
+    showMember();
+    drawWishList();
+  };
+</script>
+
+</body>
+</html>

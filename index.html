@@ -367,6 +367,8 @@
   <a href="#">신상품</a>
   <a href="#">베스트</a>
   <a href="#">기획전</a>
+  <a href="join.html">회원가입</a>
+  <a href="mypage.html">마이페이지</a>
   <a href="#">고객센터</a>
 </nav>
 
@@ -628,48 +630,75 @@
     noResult.style.display = (shownCount === 0) ? "block" : "none";
   }
 
-  // 하트를 누르면 찜하기가 켜지고 꺼집니다.
-  function toggleWish(btn) {
-    var card = btn.parentNode;                        // 하트가 들어있는 카드
-    var name = card.querySelector(".name").textContent; // 상품 이름
+  // ===== 찜하기 =====
+  // 찜한 상품은 브라우저에 목록으로 저장합니다. (새로고침해도 남아 있습니다)
+  var WISH_KEY = "pinkholic_wish";
 
-    if (btn.classList.contains("on")) {
-      btn.classList.remove("on");
-      btn.textContent = "♡";        // 빈 하트
-      saveWish(name, false);
-    } else {
-      btn.classList.add("on");
-      btn.textContent = "♥";        // 채운 하트
-      saveWish(name, true);
+  // 저장된 찜 목록을 읽어옵니다.
+  function loadWishList() {
+    try {
+      return JSON.parse(localStorage.getItem(WISH_KEY)) || [];
+    } catch (e) {
+      return [];   // 저장을 막아둔 브라우저에서는 빈 목록으로 봅니다.
     }
   }
 
-  // 찜한 상품을 브라우저에 기억시킵니다. (새로고침해도 남아 있습니다)
-  function saveWish(name, isOn) {
+  // 찜 목록을 저장합니다.
+  function saveWishList(list) {
     try {
-      if (isOn) {
-        localStorage.setItem("wish_" + name, "1");
-      } else {
-        localStorage.removeItem("wish_" + name);
-      }
+      localStorage.setItem(WISH_KEY, JSON.stringify(list));
     } catch (e) {
-      // 브라우저가 저장을 막아둔 경우에는 그냥 넘어갑니다.
+      // 저장이 안 되어도 화면은 정상 동작합니다.
     }
+  }
+
+  // 하트를 누르면 찜하기가 켜지고 꺼집니다.
+  function toggleWish(btn) {
+    var card = btn.parentNode;
+    var name = card.querySelector(".name").textContent;
+    var list = loadWishList();
+
+    // 이미 찜한 상품인지 찾습니다.
+    var found = -1;
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].name === name) {
+        found = i;
+      }
+    }
+
+    if (found !== -1) {
+      list.splice(found, 1);        // 목록에서 빼기
+      btn.classList.remove("on");
+      btn.textContent = "♡";
+    } else {
+      // 마이페이지에서 보여줄 정보까지 함께 저장합니다.
+      list.push({
+        name: name,
+        price: card.querySelector(".price").textContent,
+        oldPrice: card.querySelector(".old-price").textContent,
+        img: card.querySelector(".photo").getAttribute("src")
+      });
+      btn.classList.add("on");
+      btn.textContent = "♥";
+    }
+
+    saveWishList(list);
   }
 
   // 페이지를 열 때, 전에 찜해둔 상품의 하트를 다시 채워줍니다.
   window.onload = function () {
+    var list = loadWishList();
     var cards = document.getElementsByClassName("card");
+
     for (var i = 0; i < cards.length; i++) {
       var name = cards[i].querySelector(".name").textContent;
       var btn = cards[i].querySelector(".wish");
-      try {
-        if (localStorage.getItem("wish_" + name) === "1") {
+
+      for (var j = 0; j < list.length; j++) {
+        if (list[j].name === name) {
           btn.classList.add("on");
           btn.textContent = "♥";
         }
-      } catch (e) {
-        // 저장된 값을 읽지 못해도 화면은 정상 동작합니다.
       }
     }
   };

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>회원가입 - 핑크홀릭</title>
+
+<style>
+  /* ===== 기본 설정 ===== */
+  body {
+    margin: 0;
+    font-family: "맑은 고딕", sans-serif;
+    background-color: #faf4f6;
+    color: #3f2c33;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  /* ===== 맨 위 (쇼핑몰 이름) ===== */
+  header {
+    /* 펄 느낌 핑크 : 밝은 핑크와 진한 핑크를 여러 번 섞어 진주처럼 반짝이게 합니다 */
+    background-image: linear-gradient(
+      115deg,
+      #f6bcd4 0%,
+      #ffeaf2 14%,
+      #eda9c6 28%,
+      #fff7fa 42%,
+      #e893b7 56%,
+      #ffe3ee 70%,
+      #f0aecb 85%,
+      #fff1f6 100%
+    );
+    background-size: 220% 100%;
+    animation: pearl 9s ease-in-out infinite;
+    color: #8e3a5e;
+    text-align: center;
+    padding: 45px 20px;
+  }
+  @keyframes pearl {
+    0%   { background-position:   0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position:   0% 50%; }
+  }
+  header h1 {
+    margin: 0;
+    font-size: 38px;
+    letter-spacing: 4px;
+    font-weight: normal;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+  header h1 a {
+    color: #8e3a5e;
+    text-decoration: none;
+  }
+  header p {
+    margin: 14px 0 0 0;
+    font-size: 16px;
+    color: #96566f;
+  }
+
+  /* ===== 메뉴 ===== */
+  nav {
+    background-color: white;
+    border-bottom: 1px solid #ecd9e0;
+    text-align: center;
+    padding: 18px;
+  }
+  nav a {
+    margin: 0 16px;
+    color: #8d4260;
+    text-decoration: none;
+    font-size: 16px;
+  }
+  nav a.now {           /* 지금 보고 있는 메뉴 */
+    color: #b9557a;
+    font-weight: bold;
+  }
+
+  /* ===== 페이지 제목 ===== */
+  .page-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: normal;
+    letter-spacing: 3px;
+    margin: 60px 0 6px 0;
+  }
+  .page-title-sub {
+    text-align: center;
+    font-size: 15px;
+    color: #8a7079;
+    margin: 0 0 40px 0;
+  }
+
+  /* ===== 연습용 안내 ===== */
+  .notice {
+    max-width: 520px;
+    margin: 0 auto 30px auto;
+    background-color: #fff3f7;
+    border: 1px solid #f0cddb;
+    border-radius: 4px;
+    padding: 16px 20px;
+    font-size: 14px;
+    color: #8d4260;
+    line-height: 1.8;
+  }
+
+  /* ===== 가입 양식 ===== */
+  .form-box {
+    max-width: 520px;
+    margin: 0 auto;
+    background-color: white;
+    border: 1px solid #ecd9e0;
+    border-radius: 4px;
+    padding: 40px 40px 34px 40px;
+    box-sizing: border-box;
+  }
+  .field {
+    margin-bottom: 22px;
+  }
+  .field label {
+    display: block;
+    font-size: 15px;
+    margin-bottom: 8px;
+  }
+  .field .star {          /* 필수 표시 */
+    color: #e0356f;
+  }
+  .field input {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 15px;
+    border: 1px solid #e3c9d4;
+    border-radius: 3px;
+    box-sizing: border-box;
+  }
+  .field .help {          /* 입력 방법 안내 */
+    font-size: 13px;
+    color: #a1909a;
+    margin-top: 6px;
+  }
+  .field .error {         /* 잘못 입력했을 때 나오는 문구 */
+    display: none;
+    font-size: 13px;
+    color: #e0356f;
+    margin-top: 6px;
+  }
+  /* 잘못 입력한 칸은 테두리도 빨갛게 */
+  .field.wrong input {
+    border-color: #e0356f;
+  }
+  .field.wrong .error {
+    display: block;
+  }
+
+  /* 약관 동의 */
+  .agree {
+    border-top: 1px solid #f0e2e8;
+    padding-top: 22px;
+    margin-bottom: 26px;
+    font-size: 15px;
+  }
+  .agree label {
+    cursor: pointer;
+  }
+  .agree .error {
+    display: none;
+    font-size: 13px;
+    color: #e0356f;
+    margin-top: 8px;
+  }
+  .agree.wrong .error {
+    display: block;
+  }
+
+  /* 가입 버튼 */
+  .submit-btn {
+    width: 100%;
+    background-color: #b9557a;
+    color: white;
+    border: none;
+    padding: 16px;
+    font-size: 16px;
+    letter-spacing: 2px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  /* 가입 완료 화면 */
+  .done {
+    display: none;              /* 가입 전에는 숨겨둡니다 */
+    max-width: 520px;
+    margin: 0 auto;
+    background-color: white;
+    border: 1px solid #ecd9e0;
+    border-radius: 4px;
+    padding: 55px 40px;
+    text-align: center;
+  }
+  .done h3 {
+    font-size: 22px;
+    font-weight: normal;
+    color: #b9557a;
+    margin: 0 0 14px 0;
+  }
+  .done p {
+    color: #6b5560;
+    margin: 0 0 26px 0;
+  }
+  .done a {
+    display: inline-block;
+    background-color: #b9557a;
+    color: white;
+    text-decoration: none;
+    padding: 13px 32px;
+    border-radius: 3px;
+  }
+
+  .bottom-space {
+    height: 80px;
+  }
+
+  /* ===== 맨 아래 (연락처) ===== */
+  footer {
+    background-color: #3f2c33;
+    color: #e8dbe0;
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 15px;
+    line-height: 2;
+  }
+</style>
+</head>
+
+<body>
+
+<!-- 맨 위 -->
+<header>
+  <h1><a href="index.html">PINKHOLIC</a></h1>
+  <p>매일의 나를 조금 더 빛나게, 어른을 위한 감성 잡화</p>
+</header>
+
+<!-- 메뉴 -->
+<nav>
+  <a href="index.html">신상품</a>
+  <a href="index.html">베스트</a>
+  <a href="index.html">기획전</a>
+  <a href="join.html" class="now">회원가입</a>
+  <a href="mypage.html">마이페이지</a>
+  <a href="index.html">고객센터</a>
+</nav>
+
+<!-- 페이지 제목 -->
+<h2 class="page-title">JOIN US</h2>
+<p class="page-title-sub">핑크홀릭 회원이 되시면 적립금과 회원 전용 할인을 드립니다</p>
+
+<!-- 연습용 안내 -->
+<div class="notice">
+  <strong>연습용 페이지입니다.</strong><br>
+  입력하신 내용은 인터넷으로 전송되지 않고, 이 브라우저에만 저장됩니다.
+  비밀번호는 아예 저장하지 않습니다. 실제 개인정보는 입력하지 말아 주세요.
+</div>
+
+<!-- 가입 양식 -->
+<div class="form-box" id="formBox">
+
+  <div class="field" id="fieldId">
+    <label>아이디 <span class="star">*</span></label>
+    <input type="text" id="userId" placeholder="영문·숫자 4자 이상">
+    <div class="help">로그인할 때 사용합니다.</div>
+    <div class="error">아이디를 영문·숫자로 4자 이상 입력해 주세요.</div>
+  </div>
+
+  <div class="field" id="fieldPw">
+    <label>비밀번호 <span class="star">*</span></label>
+    <input type="password" id="userPw" placeholder="영문과 숫자를 섞어 8자 이상">
+    <div class="error">영문과 숫자를 섞어 8자 이상 입력해 주세요.</div>
+  </div>
+
+  <div class="field" id="fieldPw2">
+    <label>비밀번호 확인 <span class="star">*</span></label>
+    <input type="password" id="userPw2" placeholder="위에 적은 비밀번호를 한 번 더">
+    <div class="error">비밀번호가 서로 다릅니다.</div>
+  </div>
+
+  <div class="field" id="fieldName">
+    <label>이름 <span class="star">*</span></label>
+    <input type="text" id="userName" placeholder="홍길동">
+    <div class="error">이름을 입력해 주세요.</div>
+  </div>
+
+  <div class="field" id="fieldEmail">
+    <label>이메일 <span class="star">*</span></label>
+    <input type="text" id="userEmail" placeholder="pink@example.com">
+    <div class="help">주문 내역과 배송 안내를 보내드립니다.</div>
+    <div class="error">이메일 형식이 올바르지 않습니다.</div>
+  </div>
+
+  <div class="field" id="fieldPhone">
+    <label>휴대폰 번호</label>
+    <input type="text" id="userPhone" placeholder="010-1234-5678">
+    <div class="help">선택 입력입니다.</div>
+    <div class="error">010-1234-5678 형식으로 입력해 주세요.</div>
+  </div>
+
+  <div class="agree" id="fieldAgree">
+    <label>
+      <input type="checkbox" id="userAgree">
+      이용약관과 개인정보 처리방침에 동의합니다 <span class="star">*</span>
+    </label>
+    <div class="error">약관에 동의하셔야 가입할 수 있습니다.</div>
+  </div>
+
+  <button class="submit-btn" onclick="join()">가입하기</button>
+
+</div>
+
+<!-- 가입 완료 화면 -->
+<div class="done" id="doneBox">
+  <h3>가입을 환영합니다</h3>
+  <p id="doneText">핑크홀릭 회원이 되셨습니다.</p>
+  <a href="index.html">쇼핑하러 가기</a>
+</div>
+
+<div class="bottom-space"></div>
+
+<!-- 맨 아래: 연락처 -->
+<footer>
+  <div>고객센터 010-123-4567 &nbsp;|&nbsp; 평일 10:00 ~ 18:00 (주말·공휴일 휴무)</div>
+  <div>이메일 help@pinkholic.com &nbsp;|&nbsp; 카카오톡 채널 @핑크홀릭</div>
+  <div>교환 · 반품은 받으신 날부터 7일 이내 가능합니다.</div>
+  <div>&copy; 2026 PINKHOLIC</div>
+</footer>
+
+<script>
+  // 회원 정보를 저장할 이름표
+  var MEMBER_KEY = "pinkholic_member";
+
+  // 한 칸에 대해 "맞음/틀림" 표시를 켜고 끕니다.
+  function mark(fieldId, isWrong) {
+    var box = document.getElementById(fieldId);
+    if (isWrong) {
+      box.classList.add("wrong");     // 빨간 테두리 + 안내 문구 보이기
+    } else {
+      box.classList.remove("wrong");
+    }
+    return !isWrong;                  // 통과했으면 true
+  }
+
+  // 가입하기 버튼을 눌렀을 때
+  function join() {
+    var id    = document.getElementById("userId").value.trim();
+    var pw    = document.getElementById("userPw").value;
+    var pw2   = document.getElementById("userPw2").value;
+    var name  = document.getElementById("userName").value.trim();
+    var email = document.getElementById("userEmail").value.trim();
+    var phone = document.getElementById("userPhone").value.trim();
+    var agree = document.getElementById("userAgree").checked;
+
+    var ok = true;
+
+    // 아이디 : 영문·숫자 4자 이상
+    if (!mark("fieldId", !/^[A-Za-z0-9]{4,}$/.test(id))) {
+      ok = false;
+    }
+
+    // 비밀번호 : 8자 이상이면서 영문과 숫자를 모두 포함
+    var pwOk = pw.length >= 8 && /[A-Za-z]/.test(pw) && /[0-9]/.test(pw);
+    if (!mark("fieldPw", !pwOk)) {
+      ok = false;
+    }
+
+    // 비밀번호 확인 : 위와 같아야 함
+    if (!mark("fieldPw2", pw2 === "" || pw2 !== pw)) {
+      ok = false;
+    }
+
+    // 이름 : 비어 있으면 안 됨
+    if (!mark("fieldName", name === "")) {
+      ok = false;
+    }
+
+    // 이메일 : @ 와 . 이 들어간 형태
+    if (!mark("fieldEmail", !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) {
+      ok = false;
+    }
+
+    // 휴대폰 : 선택 입력이므로 비어 있으면 통과
+    var phoneOk = (phone === "") || /^01[0-9]-\d{3,4}-\d{4}$/.test(phone);
+    if (!mark("fieldPhone", !phoneOk)) {
+      ok = false;
+    }
+
+    // 약관 동의
+    var agreeBox = document.getElementById("fieldAgree");
+    if (agree) {
+      agreeBox.classList.remove("wrong");
+    } else {
+      agreeBox.classList.add("wrong");
+      ok = false;
+    }
+
+    // 한 곳이라도 틀렸으면 여기서 멈춥니다.
+    if (!ok) {
+      return;
+    }
+
+    // 저장합니다. 비밀번호는 일부러 저장하지 않습니다.
+    try {
+      localStorage.setItem(MEMBER_KEY, JSON.stringify({
+        id: id,
+        name: name,
+        email: email,
+        phone: phone,
+        joinedAt: new Date().toLocaleDateString("ko-KR")
+      }));
+    } catch (e) {
+      // 저장이 막힌 브라우저에서도 화면은 정상 동작합니다.
+    }
+
+    // 가입 양식을 감추고 완료 화면을 보여줍니다.
+    document.getElementById("formBox").style.display = "none";
+    document.getElementById("doneText").textContent =
+      name + "님, 핑크홀릭 회원이 되셨습니다. 마이페이지에서 확인하실 수 있습니다.";
+    document.getElementById("doneBox").style.display = "block";
+    window.scrollTo(0, 0);
+  }
+</script>
+
+</body>
+</html>
