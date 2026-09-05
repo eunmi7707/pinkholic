@@ -1,0 +1,336 @@
+/* ============================================================
+   핑크홀릭 - 모든 페이지가 함께 쓰는 디자인 파일
+   색을 바꾸고 싶으면 이 파일만 고치면 모든 페이지에 반영됩니다.
+   ============================================================ */
+
+/* ===== 기본 설정 ===== */
+body {
+  margin: 0;
+  font-family: "맑은 고딕", sans-serif;
+  background-color: #faf4f6;
+  color: #3f2c33;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* ===== 맨 위 (쇼핑몰 이름) ===== */
+header {
+  /* 펄 느낌 핑크 : 밝은 핑크와 진한 핑크를 여러 번 섞어 진주처럼 반짝이게 합니다 */
+  background-image: linear-gradient(
+    115deg,
+    #f6bcd4 0%,
+    #ffeaf2 14%,
+    #eda9c6 28%,
+    #fff7fa 42%,
+    #e893b7 56%,
+    #ffe3ee 70%,
+    #f0aecb 85%,
+    #fff1f6 100%
+  );
+  background-size: 220% 100%;
+  animation: pearl 9s ease-in-out infinite;
+  color: #8e3a5e;
+  text-align: center;
+  padding: 45px 20px;
+}
+@keyframes pearl {
+  0%   { background-position:   0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position:   0% 50%; }
+}
+header h1 {
+  margin: 0;
+  font-size: 38px;
+  letter-spacing: 4px;
+  font-weight: normal;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+header h1 a {
+  color: #8e3a5e;
+  text-decoration: none;
+}
+header p {
+  margin: 14px 0 0 0;
+  font-size: 16px;
+  color: #96566f;
+}
+
+/* ===== 메뉴 ===== */
+nav {
+  background-color: white;
+  border-bottom: 1px solid #ecd9e0;
+  text-align: center;
+  padding: 18px;
+}
+nav a {
+  margin: 0 14px;
+  color: #8d4260;
+  text-decoration: none;
+  font-size: 16px;
+}
+nav a.now {           /* 지금 보고 있는 메뉴 */
+  color: #b9557a;
+  font-weight: bold;
+}
+
+/* ===== 섹션 제목 ===== */
+.section-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: normal;
+  letter-spacing: 3px;
+  margin: 60px 0 6px 0;
+}
+.section-title-sub {
+  text-align: center;
+  font-size: 15px;
+  color: #8a7079;
+  margin: 0;
+}
+
+/* ===== 상품 카드 ===== */
+.products {
+  display: grid;                         /* 바둑판처럼 칸을 나눕니다 */
+  grid-template-columns: repeat(4, 1fr); /* 한 줄에 4칸 */
+  gap: 28px;
+  padding: 40px 20px 70px 20px;
+  max-width: 1150px;
+  margin: 0 auto;
+}
+.card {
+  background-color: white;
+  position: relative;       /* 배지와 하트를 카드 위에 얹기 위한 기준점 */
+  border: 1px solid #ecd9e0;
+  border-radius: 4px;
+  box-sizing: border-box;
+  text-align: center;
+  padding: 20px 20px 28px 20px;
+}
+/* 크게 보여줄 상품 : 가로 2칸 + 세로 2칸 */
+.card.big {
+  grid-column: span 2;
+  grid-row: span 2;
+  display: flex;
+  flex-direction: column;
+}
+.card.big .photo {
+  flex: 1;
+  height: auto;
+  min-height: 320px;
+}
+.card.big .name  { font-size: 22px; }
+.card.big .price { font-size: 26px; }
+.card.big .badge { font-size: 14px; padding: 7px 14px; }
+
+/* 상품 사진 */
+.photo {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;   /* 사진이 찌그러지지 않게 잘라서 채웁니다 */
+  border-radius: 3px;
+  display: block;
+}
+.card a.photo-link {
+  display: block;
+  text-decoration: none;
+}
+
+/* BEST 배지 */
+.badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background-color: #b9557a;
+  color: white;
+  font-size: 12px;
+  letter-spacing: 2px;
+  padding: 5px 10px;
+  border-radius: 2px;
+  z-index: 1;
+}
+
+/* 찜하기 하트 버튼 */
+.card .wish {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e8d3dc;
+  border-radius: 50%;
+  color: #c98aa4;
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1;
+}
+.card .wish.on {
+  color: #e0356f;
+  border-color: #e0356f;
+}
+
+/* 상품 이름과 가격 */
+.name {
+  font-size: 17px;
+  margin: 18px 0 10px 0;
+}
+.name a {
+  color: #3f2c33;
+  text-decoration: none;
+}
+.old-price {
+  color: #a99aa0;
+  text-decoration: line-through;
+  font-size: 14px;
+}
+.price {
+  color: #b9557a;
+  font-size: 21px;
+  font-weight: bold;
+  margin: 4px 0 18px 0;
+}
+.rate {
+  color: #d1436a;
+  font-size: 15px;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+/* 카드 안의 버튼 */
+.card button {
+  background-color: white;
+  color: #b9557a;
+  border: 1px solid #b9557a;
+  padding: 11px 30px;
+  font-size: 15px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+/* 진한 핑크 버튼 (가입하기, 주문하기 등) */
+.main-btn {
+  background-color: #b9557a;
+  color: white;
+  border: none;
+  padding: 16px 40px;
+  font-size: 16px;
+  letter-spacing: 2px;
+  border-radius: 3px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* 아무것도 없을 때 나오는 안내 */
+.empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #8a7079;
+  padding: 60px 20px;
+}
+.empty a {
+  display: inline-block;
+  margin-top: 18px;
+  background-color: #b9557a;
+  color: white;
+  text-decoration: none;
+  padding: 13px 32px;
+  border-radius: 3px;
+}
+
+/* ===== 입력 양식 (회원가입 / 로그인) ===== */
+.form-box {
+  max-width: 520px;
+  margin: 0 auto;
+  background-color: white;
+  border: 1px solid #ecd9e0;
+  border-radius: 4px;
+  padding: 40px 40px 34px 40px;
+  box-sizing: border-box;
+}
+.field {
+  margin-bottom: 22px;
+}
+.field label {
+  display: block;
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+.field .star {
+  color: #e0356f;
+}
+.field input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 15px;
+  border: 1px solid #e3c9d4;
+  border-radius: 3px;
+  box-sizing: border-box;
+}
+.field .help {
+  font-size: 13px;
+  color: #a1909a;
+  margin-top: 6px;
+}
+.field .error {           /* 잘못 입력했을 때 나오는 문구 */
+  display: none;
+  font-size: 13px;
+  color: #e0356f;
+  margin-top: 6px;
+}
+.field.wrong input {
+  border-color: #e0356f;
+}
+.field.wrong .error {
+  display: block;
+}
+.submit-btn {
+  width: 100%;
+  background-color: #b9557a;
+  color: white;
+  border: none;
+  padding: 16px;
+  font-size: 16px;
+  letter-spacing: 2px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+/* 연습용 안내 상자 */
+.notice {
+  max-width: 520px;
+  margin: 0 auto 30px auto;
+  background-color: #fff3f7;
+  border: 1px solid #f0cddb;
+  border-radius: 4px;
+  padding: 16px 20px;
+  font-size: 14px;
+  color: #8d4260;
+  line-height: 1.8;
+}
+
+.bottom-space {
+  height: 80px;
+}
+
+/* ===== 화면이 좁아지면 칸 수를 줄입니다 ===== */
+@media (max-width: 900px) {
+  .products { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .products { grid-template-columns: 1fr; }
+  .card.big { grid-column: span 1; grid-row: span 1; }
+  nav a { margin: 0 8px; font-size: 15px; }
+}
+
+/* ===== 맨 아래 (연락처) ===== */
+footer {
+  background-color: #3f2c33;
+  color: #e8dbe0;
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 15px;
+  line-height: 2;
+}
