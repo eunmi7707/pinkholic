@@ -18,21 +18,43 @@
 
   /* ===== 맨 위 (쇼핑몰 이름) ===== */
   header {
-    background-color: #b9557a;   /* 차분한 로즈 핑크 */
-    color: white;
+    /* 펄 느낌 핑크 : 밝은 핑크와 진한 핑크를 여러 번 섞어 진주처럼 반짝이게 합니다 */
+    background-image: linear-gradient(
+      115deg,
+      #f6bcd4 0%,
+      #ffeaf2 14%,
+      #eda9c6 28%,
+      #fff7fa 42%,
+      #e893b7 56%,
+      #ffe3ee 70%,
+      #f0aecb 85%,
+      #fff1f6 100%
+    );
+    background-size: 220% 100%;      /* 그림을 넓게 잡아두고 */
+    animation: pearl 9s ease-in-out infinite;  /* 천천히 움직여 반짝이게 */
+    color: #8e3a5e;
     text-align: center;
     padding: 45px 20px;
   }
+
+  /* 펄이 흐르는 움직임 */
+  @keyframes pearl {
+    0%   { background-position:   0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position:   0% 50%; }
+  }
+
   header h1 {
     margin: 0;
     font-size: 38px;
     letter-spacing: 4px;         /* 글자 사이를 띄워 고급스럽게 */
     font-weight: normal;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);  /* 글자에 진주빛 윤기 */
   }
   header p {
     margin: 14px 0 0 0;
     font-size: 16px;
-    color: #f7dde6;
+    color: #96566f;
   }
 
   /* ===== 메뉴 ===== */
@@ -147,6 +169,11 @@
   @media (max-width: 560px) {
     .products { grid-template-columns: 1fr; }
     .card.big { grid-column: span 1; grid-row: span 1; }
+  }
+
+  /* '전체'에서는 숨기고 '가방'을 눌렀을 때만 보이는 상품 */
+  .card.hide-on-all {
+    display: none;
   }
 
   /* BEST 배지 */
@@ -266,7 +293,7 @@
   <button class="cat-btn" onclick="showCategory('패션소품', this)">패션소품</button>
 </div>
 
-<!-- 상품 카드 11개 -->
+<!-- 상품 카드 13개 -->
 <!-- 사진을 바꾸려면 src="..." 안의 주소만 바꾸면 됩니다.
      내 사진을 쓰려면 이 index.html 과 같은 폴더에 사진을 넣고
      src="사진이름.jpg" 처럼 파일 이름만 적어주세요. -->
@@ -347,7 +374,7 @@
     <button onclick="showAlert()">장바구니 담기</button>
   </div>
 
-  <div class="card" data-category="가방">
+  <div class="card hide-on-all" data-category="가방">
     <img class="photo" src="https://images.unsplash.com/photo-1786872814428-1f0d8d685217?w=600" alt="소프트 레더 미니 숄더백">
     <div class="name">소프트 레더 미니 숄더백</div>
     <div class="old-price">138,000원</div>
@@ -355,11 +382,27 @@
     <button onclick="showAlert()">장바구니 담기</button>
   </div>
 
-  <div class="card" data-category="가방">
+  <div class="card hide-on-all" data-category="가방">
     <img class="photo" src="https://images.unsplash.com/photo-1713425886143-6ea8c776bf2d?w=600" alt="크로커다일 패턴 숄더백">
     <div class="name">크로커다일 패턴 숄더백</div>
     <div class="old-price">152,000원</div>
     <div class="price"><span class="rate">19%</span>123,100원</div>
+    <button onclick="showAlert()">장바구니 담기</button>
+  </div>
+
+  <div class="card hide-on-all" data-category="주얼리">
+    <img class="photo" src="https://images.unsplash.com/photo-1654699991494-892326ee8171?w=600" alt="핑크 진주 목걸이와 귀걸이 세트">
+    <div class="name">핑크 진주 목걸이 세트</div>
+    <div class="old-price">118,000원</div>
+    <div class="price"><span class="rate">19%</span>95,500원</div>
+    <button onclick="showAlert()">장바구니 담기</button>
+  </div>
+
+  <div class="card hide-on-all" data-category="주얼리">
+    <img class="photo" src="https://images.unsplash.com/photo-1623303179820-de8ec58b03dc?w=600" alt="진주 스터드 귀걸이">
+    <div class="name">진주 스터드 귀걸이</div>
+    <div class="old-price">62,000원</div>
+    <div class="price"><span class="rate">19%</span>50,200원</div>
     <button onclick="showAlert()">장바구니 담기</button>
   </div>
 
@@ -386,7 +429,13 @@
     // 1. 상품 카드를 하나씩 확인해서 보이거나 숨깁니다.
     var cards = document.getElementsByClassName("card");
     for (var i = 0; i < cards.length; i++) {
-      if (name === "전체" || cards[i].getAttribute("data-category") === name) {
+
+      // hide-on-all 표시가 붙은 상품은 '전체'에서는 보여주지 않습니다.
+      var hideOnAll = cards[i].classList.contains("hide-on-all");
+
+      if (name === "전체") {
+        cards[i].style.display = hideOnAll ? "none" : "block";
+      } else if (cards[i].getAttribute("data-category") === name) {
         cards[i].style.display = "block";   // 보이기
       } else {
         cards[i].style.display = "none";    // 숨기기
