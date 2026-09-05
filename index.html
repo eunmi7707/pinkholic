@@ -613,7 +613,9 @@
         show = cards[i].getAttribute("data-category") === currentCategory;
       }
 
-      cards[i].style.display = show ? "block" : "none";
+      // BEST 1 큰 카드는 flex 로 되돌려야 사진이 제 크기로 늘어납니다.
+      var shownStyle = cards[i].classList.contains("big") ? "flex" : "block";
+      cards[i].style.display = show ? shownStyle : "none";
       if (show) {
         shownCount++;
       }
