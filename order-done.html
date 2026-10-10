@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>주문 완료 - 핑크홀릭</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+  /* 이 페이지에서만 쓰는 디자인 */
+
+  .done-box {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* 맨 위 : 주문 완료 인사와 주문 번호 */
+  .done-head {
+    background-color: white;
+    border: 1px solid #ecd9e0;
+    border-radius: 4px;
+    padding: 40px 28px;
+    text-align: center;
+    margin-bottom: 18px;
+  }
+  .done-head .check {
+    width: 56px;
+    height: 56px;
+    line-height: 56px;
+    margin: 0 auto 16px auto;
+    border-radius: 50%;
+    background-color: #b9557a;
+    color: white;
+    font-size: 28px;
+  }
+  .done-head h3 {
+    font-size: 22px;
+    font-weight: normal;
+    color: #b9557a;
+    margin: 0 0 10px 0;
+  }
+  .done-head .order-no {
+    color: #6b5560;
+  }
+  .done-head .order-no b {
+    color: #3f2c33;
+    letter-spacing: 1px;
+  }
+  .done-head .status {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 5px 14px;
+    border-radius: 14px;
+    background-color: #fff3f7;
+    border: 1px solid #f0cddb;
+    color: #8d4260;
+    font-size: 14px;
+  }
+  .done-head .pay-guide {
+    font-size: 14px;
+    color: #a1909a;
+    margin-top: 12px;
+  }
+
+  /* 주문 내용 칸 (주문 상품 / 배송지 / 결제 수단) */
+  .done-section {
+    background-color: white;
+    border: 1px solid #ecd9e0;
+    border-radius: 4px;
+    padding: 24px 28px;
+    margin-bottom: 18px;
+  }
+  .done-section h3 {
+    font-size: 18px;
+    font-weight: normal;
+    color: #3f2c33;
+    margin: 0 0 16px 0;
+  }
+
+  /* 주문 상품 한 줄 */
+  .done-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 0;
+    border-top: 1px solid #f5e9ee;
+  }
+  .done-item:first-of-type {
+    border-top: none;
+    padding-top: 0;
+  }
+  .done-item img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .done-item .info {
+    flex: 1;
+    min-width: 0;
+  }
+  .done-item .count {
+    font-size: 14px;
+    color: #a1909a;
+    margin-top: 4px;
+  }
+  .done-item .sum {
+    font-weight: bold;
+    white-space: nowrap;
+  }
+
+  /* 배송지 · 결제 수단 : 이름표와 값 */
+  .info-line {
+    display: flex;
+    gap: 16px;
+    padding: 6px 0;
+  }
+  .info-line .key {
+    width: 90px;
+    flex-shrink: 0;
+    color: #a1909a;
+  }
+  .info-line .val {
+    color: #3f2c33;
+    word-break: break-all;
+  }
+
+  /* 아래 버튼 두 개 */
+  .done-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 26px;
+  }
+  .done-buttons a {
+    flex: 0 1 220px;
+    text-align: center;
+    padding: 15px 10px;        /* 두 버튼 크기를 똑같이 맞춥니다 */
+    border: 1px solid #b9557a;
+    box-sizing: border-box;
+  }
+  .done-buttons .line-btn {
+    color: #b9557a;
+    text-decoration: none;
+    border-radius: 3px;
+    letter-spacing: 2px;
+  }
+
+  .done-box .empty {
+    background-color: white;
+    border: 1px solid #ecd9e0;
+    border-radius: 4px;
+  }
+
+  /* ===== 휴대폰 화면 ===== */
+  @media (max-width: 620px) {
+    .done-box {
+      padding: 0 14px;
+    }
+    .done-head {
+      padding: 30px 18px;
+    }
+    .done-section {
+      padding: 20px 18px;
+    }
+    .done-item img {
+      width: 56px;
+      height: 56px;
+    }
+    .done-item .info {
+      font-size: 15px;
+    }
+    .info-line {
+      font-size: 15px;
+    }
+    .info-line .key {
+      width: 72px;
+    }
+    .done-buttons a {
+      flex: 1 1 0;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<!-- 맨 위 -->
+<header>
+  <h1><a href="index.html">PINKHOLIC</a></h1>
+  <p>매일의 나를 조금 더 빛나게, 어른을 위한 감성 잡화</p>
+</header>
+
+<!-- 메뉴 -->
+<nav>
+  <a href="index.html">전체상품</a>
+  <a href="cart.html">장바구니<span id="cartCount">0</span></a>
+  <a href="mypage.html">마이페이지</a>
+  <a href="join.html" id="joinLink">회원가입</a>
+  <a href="login.html" id="loginLink">로그인</a>
+</nav>
+
+<!-- 페이지 제목 -->
+<h2 class="section-title">ORDER COMPLETE</h2>
+<p class="section-title-sub" style="margin-bottom: 40px;">주문해 주셔서 감사합니다</p>
+
+<!-- 주문 확인 (자바스크립트가 채웁니다) -->
+<div class="done-box" id="doneBox">
+  <div class="empty">주문 내용을 불러오는 중입니다...</div>
+</div>
+
+<div class="bottom-space"></div>
+
+<!-- 맨 아래: 연락처 -->
+<footer>
+  <div>고객센터 010-123-4567 &nbsp;|&nbsp; 평일 10:00 ~ 18:00 (주말·공휴일 휴무)</div>
+  <div>이메일 help@pinkholic.com &nbsp;|&nbsp; 카카오톡 채널 @핑크홀릭</div>
+  <div>교환 · 반품은 받으신 날부터 7일 이내 가능합니다.</div>
+  <div>&copy; 2026 PINKHOLIC</div>
+</footer>
+
+<script src="products.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
+<script src="supabase.js"></script>
+<script>
+  var PAY_NAMES = { card: "신용카드", bank: "무통장 입금", kakao: "카카오페이" };
+
+  // 회원이 적은 글자에 < > 같은 기호가 있어도 화면이 깨지지 않게 합니다.
+  function safeText(text) {
+    var div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // 이름표와 값 한 줄
+  function infoLine(key, value) {
+    return '<div class="info-line"><span class="key">' + key + '</span><span class="val">' + safeText(value) + '</span></div>';
+  }
+
+  // 주문 확인 화면을 그립니다.
+  function drawDone(order) {
+    var box = document.getElementById("doneBox");
+
+    // 주문을 찾지 못했을 때 (주소가 틀렸거나, 다른 회원의 주문이거나, 로그인이 풀린 경우)
+    if (!order) {
+      box.innerHTML =
+        '<div class="empty">주문 내용을 찾을 수 없습니다.<br>로그인한 회원 본인의 주문만 보실 수 있습니다.' +
+        '<br><a href="index.html">쇼핑 계속하기</a></div>';
+      return;
+    }
+
+    // 주문 상품
+    var itemsHtml = "";
+    for (var i = 0; i < order.order_items.length; i++) {
+      var item = order.order_items[i];
+      itemsHtml +=
+        '<div class="done-item">' +
+          '<img src="' + safeText(item.img) + '" alt="' + safeText(item.name) + '">' +
+          '<div class="info">' +
+            '<div>' + safeText(item.name) + '</div>' +
+            '<div class="count">' + won(item.price) + ' × ' + item.count + '개</div>' +
+          '</div>' +
+          '<div class="sum">' + won(item.price * item.count) + '</div>' +
+        '</div>';
+    }
+
+    // 결제 금액 : 주문할 때 저장해 둔 금액을 그대로 보여줍니다.
+    var totals = {
+      oldTotal: order.old_total,
+      saleDiscount: order.sale_discount,
+      memberDiscount: order.member_discount,
+      shipFee: order.ship_fee,
+      pay: order.pay_total,
+      save: order.save_point
+    };
+
+    var orderedAt = new Date(order.created_at).toLocaleString("ko-KR", {
+      year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit"
+    });
+
+    // 결제 수단별 안내 (아직 결제 서비스가 연결되지 않았습니다)
+    var payGuide = order.pay_method === "bank"
+      ? "안내해 드리는 계좌로 3일 안에 " + won(order.pay_total) + "을 입금해 주세요."
+      : "결제 서비스가 준비되면 결제 방법을 안내해 드립니다.";
+
+    box.innerHTML =
+      // 1) 주문 완료 인사와 주문 번호
+      '<div class="done-head">' +
+        '<div class="check">✓</div>' +
+        '<h3>주문이 완료되었습니다</h3>' +
+        '<div class="order-no">주문 번호 <b>' + safeText(order.order_no) + '</b></div>' +
+        '<div class="status">' + safeText(order.status) + '</div>' +
+        '<div class="pay-guide">' + payGuide + '</div>' +
+      '</div>' +
+
+      // 2) 주문 상품
+      '<div class="done-section">' +
+        '<h3>주문 상품 (' + order.order_items.length + '개)</h3>' +
+        itemsHtml +
+      '</div>' +
+
+      // 3) 배송지
+      '<div class="done-section">' +
+        '<h3>배송지</h3>' +
+        infoLine("받는 분", order.ship_name) +
+        infoLine("휴대폰", order.ship_phone) +
+        infoLine("주소", order.ship_address) +
+        infoLine("배송 메모", order.ship_memo || "-") +
+      '</div>' +
+
+      // 4) 주문 정보
+      '<div class="done-section">' +
+        '<h3>주문 정보</h3>' +
+        infoLine("주문 일시", orderedAt) +
+        infoLine("결제 수단", PAY_NAMES[order.pay_method] || order.pay_method) +
+      '</div>' +
+
+      // 5) 결제 금액
+      totalBoxHtml(totals, true, "결제 금액") +
+
+      '<div class="done-buttons">' +
+        '<a class="line-btn" href="mypage.html">마이페이지</a>' +
+        '<a class="main-btn" href="index.html">쇼핑 계속하기</a>' +
+      '</div>';
+  }
+
+  window.onload = function () {
+    updateNav();
+
+    // 주소창의 ?no=주문번호 로 주문을 불러옵니다.
+    var orderNo = getParam("no");
+    if (!orderNo || !getLoginUser()) {
+      drawDone(null);
+      return;
+    }
+    loadOrder(orderNo, drawDone);
+  };
+</script>
+
+</body>
+</html>

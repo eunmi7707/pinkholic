@@ -193,6 +193,56 @@ function loadProducts(done) {
   });
 }
 
+/* ===== 주문 =====
+   주문은 Supabase 의 place_order 함수가 저장합니다.
+   (금액은 함수가 상품 표의 가격으로 다시 계산합니다.) */
+
+/* 주문하기 : 장바구니로 주문을 저장합니다.
+   ship 모양 : {name, phone, address, memo, payMethod}
+   성공하면 done(주문번호), 실패하면 done(null, 오류 문구) */
+function placeOrder(ship, done) {
+  if (!sb) {
+    done(null, NETWORK_ERROR.text);
+    return;
+  }
+
+  sb.rpc("place_order", {
+    items: orderableCart(),
+    ship_name: ship.name,
+    ship_phone: ship.phone,
+    ship_address: ship.address,
+    ship_memo: ship.memo,
+    pay_method: ship.payMethod
+  }).then(function (res) {
+    if (res.error) {
+      // place_order 가 알려준 이유(한국어)는 그대로, 그 밖의 오류는 한국어 안내로 바꿉니다.
+      done(null, res.error.code === "P0001" ? res.error.message : "주문을 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      return;
+    }
+    // Supabase 장바구니는 함수가 비웠으니 이 브라우저의 장바구니도 비웁니다.
+    saveData(CART_KEY, []);
+    saveData(SYNC.cart.dirtyKey, false);
+    done(res.data);
+  }, function () {
+    done(null, NETWORK_ERROR.text);
+  });
+}
+
+/* 주문 번호로 주문 하나를 불러옵니다. (본인 주문만 볼 수 있습니다)
+   성공하면 done(주문), 없거나 실패하면 done(null) */
+function loadOrder(orderNo, done) {
+  if (!sb) {
+    done(null);
+    return;
+  }
+
+  sb.from("orders").select("*, order_items(*)").eq("order_no", orderNo).maybeSingle().then(function (res) {
+    done(res.error ? null : res.data);
+  }, function () {
+    done(null);
+  });
+}
+
 /* ===== 장바구니와 찜 (로그인한 회원은 Supabase 에 저장) =====
    화면에서는 지금처럼 브라우저에 저장된 장바구니와 찜을 씁니다.
    로그인한 회원이면 바뀔 때마다 Supabase 에도 저장하고,

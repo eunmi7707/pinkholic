@@ -226,3 +226,135 @@ $$;
 
 revoke execute on function public.set_wish(jsonb) from public, anon;
 grant execute on function public.set_wish(jsonb) to authenticated;
+
+
+-- ============================================================
+-- 주문 표 (orders, order_items)
+--
+-- 주문서에서 결제하기를 누르면 place_order 함수가 주문을 저장합니다.
+-- 금액은 사이트가 보낸 값을 믿지 않고 이 함수가 상품 표의 가격으로 다시 계산합니다.
+-- (아직 결제 서비스가 연결되지 않아 상태는 '결제 대기'로 저장합니다.)
+-- ============================================================
+
+create table if not exists public.orders (
+  id              bigint generated always as identity primary key,
+  order_no        text    unique,                     -- 주문 번호 (예: PH261010-00001)
+  user_id         uuid    not null references auth.users(id) on delete cascade,
+  status          text    not null default '결제 대기',
+  ship_name       text    not null,                   -- 받는 분
+  ship_phone      text    not null,
+  ship_address    text    not null,
+  ship_memo       text    not null default '',
+  pay_method      text    not null check (pay_method in ('card', 'bank', 'kakao')),
+  old_total       integer not null,                   -- 할인 전 상품 금액
+  sale_discount   integer not null,                   -- 기획전 할인
+  member_discount integer not null,                   -- 회원 할인
+  ship_fee        integer not null,
+  pay_total       integer not null,                   -- 결제 금액
+  save_point      integer not null,                   -- 적립 예정
+  created_at      timestamptz not null default now()
+);
+
+-- 주문한 상품 (주문할 때의 이름·가격을 그대로 남겨 둡니다)
+create table if not exists public.order_items (
+  id         bigint generated always as identity primary key,
+  order_id   bigint  not null references public.orders(id) on delete cascade,
+  product_id integer not null,
+  name       text    not null,
+  img        text    not null,
+  old_price  integer not null,
+  price      integer not null,
+  count      integer not null check (count between 1 and 99)
+);
+
+-- 보안 : 회원은 자기 주문만 볼 수 있고, 주문은 place_order 함수로만 만듭니다.
+alter table public.orders enable row level security;
+alter table public.order_items enable row level security;
+
+drop policy if exists "본인 주문 보기" on public.orders;
+create policy "본인 주문 보기" on public.orders
+  for select to authenticated using (auth.uid() = user_id);
+
+drop policy if exists "본인 주문 상품 보기" on public.order_items;
+create policy "본인 주문 상품 보기" on public.order_items
+  for select to authenticated using (
+    exists (select 1 from public.orders o where o.id = order_id and o.user_id = auth.uid())
+  );
+
+grant select on public.orders, public.order_items to authenticated;
+
+-- 주문하기 : 주문을 저장하고 회원 장바구니를 비운 뒤 주문 번호를 돌려줍니다.
+-- items 모양 : [{"id": 상품번호, "count": 수량}, ...]
+create or replace function public.place_order(
+  items jsonb, ship_name text, ship_phone text, ship_address text, ship_memo text, pay_method text
+)
+returns text
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  uid uuid := auth.uid();
+  lines jsonb;
+  old_sum integer;
+  goods_sum integer;
+  member_cut integer;
+  fee integer;
+  new_id bigint;
+  new_no text;
+begin
+  if uid is null then
+    raise exception '로그인이 필요합니다.';
+  end if;
+  if coalesce(trim(ship_name), '') = '' or coalesce(trim(ship_phone), '') = '' or coalesce(trim(ship_address), '') = '' then
+    raise exception '배송지를 모두 입력해 주세요.';
+  end if;
+  if pay_method not in ('card', 'bank', 'kakao') then
+    raise exception '결제 수단을 골라 주세요.';
+  end if;
+
+  -- 주문할 상품 : 판매 중인 상품만, 같은 상품은 합치고, 수량은 1~99개
+  select coalesce(jsonb_agg(to_jsonb(l)), '[]'::jsonb) into lines
+  from (
+    select p.id, p.name, p.img, p.old_price, p.price, least(sum((e ->> 'count')::integer), 99)::integer as count
+    from jsonb_array_elements(items) as e
+    join public.products p on p.id = (e ->> 'id')::integer
+    where (e ->> 'count')::integer > 0
+    group by p.id, p.name, p.img, p.old_price, p.price
+  ) as l;
+
+  select coalesce(sum(old_price * count), 0), coalesce(sum(price * count), 0)
+    into old_sum, goods_sum
+  from jsonb_to_recordset(lines) as x(old_price integer, price integer, count integer);
+
+  if goods_sum = 0 then
+    raise exception '장바구니가 비어 있어 주문할 수 없습니다.';
+  end if;
+
+  -- 금액 계산 (사이트의 calcTotals 와 같은 규칙)
+  member_cut := floor(goods_sum * 3 / 100.0 / 10) * 10;          -- 회원 할인 3%, 10원 단위 버림
+  fee := case when goods_sum >= 30000 then 0 else 3000 end;       -- 3만원 이상 무료배송
+
+  insert into public.orders (user_id, ship_name, ship_phone, ship_address, ship_memo, pay_method,
+                             old_total, sale_discount, member_discount, ship_fee, pay_total, save_point)
+  values (uid, trim(ship_name), trim(ship_phone), trim(ship_address), coalesce(trim(ship_memo), ''), pay_method,
+          old_sum, old_sum - goods_sum, member_cut, fee, goods_sum - member_cut + fee,
+          floor((goods_sum - member_cut) * 1 / 100.0 / 10) * 10)       -- 적립 1%, 10원 단위 버림
+  returning id into new_id;
+
+  new_no := 'PH' || to_char(now() at time zone 'Asia/Seoul', 'YYMMDD') || '-' || lpad(new_id::text, 5, '0');
+  update public.orders set order_no = new_no where id = new_id;
+
+  insert into public.order_items (order_id, product_id, name, img, old_price, price, count)
+  select new_id, x.id, x.name, x.img, x.old_price, x.price, x.count
+  from jsonb_to_recordset(lines) as x(id integer, name text, img text, old_price integer, price integer, count integer);
+
+  -- 주문한 회원의 장바구니를 비웁니다.
+  delete from public.cart_items where user_id = uid;
+
+  return new_no;
+end;
+$$;
+
+revoke execute on function public.place_order(jsonb, text, text, text, text, text) from public, anon;
+grant execute on function public.place_order(jsonb, text, text, text, text, text) to authenticated;
