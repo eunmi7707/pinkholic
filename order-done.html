@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>주문 완료 - 핑크홀릭</title>
-<link rel="stylesheet" href="style.css?v=20261010-1532">
+<link rel="stylesheet" href="style.css?v=20261010-1555">
 
 <style>
   /* 이 페이지에서만 쓰는 디자인 */
@@ -18,8 +18,8 @@
   /* 맨 위 : 주문 완료 인사와 주문 번호 */
   .done-head {
     background-color: white;
-    border: 1px solid #ecd9e0;
-    border-radius: 4px;
+    border: 1px solid #ecebe6;
+    border-radius: 0;
     padding: 40px 28px;
     text-align: center;
     margin-bottom: 18px;
@@ -30,21 +30,22 @@
     line-height: 56px;
     margin: 0 auto 16px auto;
     border-radius: 50%;
-    background-color: #b9557a;
+    background-color: #111111;
     color: white;
     font-size: 28px;
   }
   .done-head h3 {
     font-size: 22px;
-    font-weight: normal;
-    color: #b9557a;
+    font-family: "Noto Serif KR", serif;
+    font-weight: 300;
+    color: #111111;
     margin: 0 0 10px 0;
   }
   .done-head .order-no {
-    color: #6b5560;
+    color: #55514a;
   }
   .done-head .order-no b {
-    color: #3f2c33;
+    color: #111111;
     letter-spacing: 1px;
   }
   .done-head .status {
@@ -52,23 +53,24 @@
     margin-top: 14px;
     padding: 5px 14px;
     border-radius: 14px;
-    background-color: #fff3f7;
-    border: 1px solid #f0cddb;
-    color: #8d4260;
+    background-color: #f7f5f0;
+    border: 1px solid #e3d7c0;
+    color: #7a5f33;
     font-size: 14px;
   }
   /* 주문 내용 칸 (주문 상품 / 배송지 / 주문 정보) */
   .done-section {
     background-color: white;
-    border: 1px solid #ecd9e0;
-    border-radius: 4px;
+    border: 1px solid #ecebe6;
+    border-radius: 0;
     padding: 24px 28px;
     margin-bottom: 18px;
   }
   .done-section h3 {
     font-size: 18px;
-    font-weight: normal;
-    color: #3f2c33;
+    font-family: "Noto Serif KR", serif;
+    font-weight: 300;
+    color: #111111;
     margin: 0 0 16px 0;
   }
 
@@ -78,7 +80,7 @@
     align-items: center;
     gap: 16px;
     padding: 12px 0;
-    border-top: 1px solid #f5e9ee;
+    border-top: 1px solid #f2f0ec;
   }
   .done-item:first-of-type {
     border-top: none;
@@ -88,7 +90,7 @@
     width: 64px;
     height: 64px;
     object-fit: cover;
-    border-radius: 3px;
+    border-radius: 0;
     flex-shrink: 0;
   }
   .done-item .info {
@@ -97,11 +99,13 @@
   }
   .done-item .count {
     font-size: 14px;
-    color: #a1909a;
+    color: #6b675f;
     margin-top: 4px;
   }
   .done-item .sum {
-    font-weight: bold;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 1.15em;
+    font-weight: 500;
     white-space: nowrap;
   }
 
@@ -114,10 +118,10 @@
   .info-line .key {
     width: 90px;
     flex-shrink: 0;
-    color: #a1909a;
+    color: #6b675f;
   }
   .info-line .val {
-    color: #3f2c33;
+    color: #111111;
     word-break: break-all;
   }
 
@@ -132,20 +136,21 @@
     flex: 0 1 220px;
     text-align: center;
     padding: 15px 10px;        /* 두 버튼 크기를 똑같이 맞춥니다 */
-    border: 1px solid #b9557a;
+    border: 1px solid #111111;
     box-sizing: border-box;
   }
   .done-buttons .line-btn {
-    color: #b9557a;
+    font-size: 13px;
+    color: #111111;
     text-decoration: none;
-    border-radius: 3px;
+    border-radius: 0;
     letter-spacing: 2px;
   }
 
   .done-box .empty {
     background-color: white;
-    border: 1px solid #ecd9e0;
-    border-radius: 4px;
+    border: 1px solid #ecebe6;
+    border-radius: 0;
   }
 
   /* ===== 휴대폰 화면 ===== */
@@ -215,9 +220,9 @@
   <div>&copy; 2026 PINKHOLIC</div>
 </footer>
 
-<script src="products.js?v=20261010-1532"></script>
+<script src="products.js?v=20261010-1555"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
-<script src="supabase.js?v=20261010-1532"></script>
+<script src="supabase.js?v=20261010-1555"></script>
 <script>
   // 회원이 적은 글자에 < > 같은 기호가 있어도 화면이 깨지지 않게 합니다.
   function safeText(text) {

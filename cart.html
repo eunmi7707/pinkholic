@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>장바구니 - 핑크홀릭</title>
-<link rel="stylesheet" href="style.css?v=20261010-1532">
+<link rel="stylesheet" href="style.css?v=20261010-1555">
 
 <style>
   /* 이 페이지에서만 쓰는 디자인 */
@@ -19,18 +19,22 @@
   .cart-item {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 24px;
     background-color: white;
-    border: 1px solid #ecd9e0;
-    border-radius: 4px;
-    padding: 18px;
-    margin-bottom: 14px;
+    border: none;
+    border-bottom: 1px solid #ecebe6;
+    border-radius: 0;
+    padding: 22px 4px;
+  }
+  .cart-item:first-child {
+    border-top: 1px solid #111111;
   }
   .cart-item img {
     width: 96px;
-    height: 96px;
+    height: 120px;
     object-fit: cover;
-    border-radius: 3px;
+    background-color: #f4f3f0;
+    border-radius: 0;
     flex-shrink: 0;
   }
   .cart-item .info {
@@ -38,13 +42,14 @@
     min-width: 0;
   }
   .cart-item .info a {
-    color: #3f2c33;
+    color: #111111;
     text-decoration: none;
+    font-family: "Noto Serif KR", serif;
     font-size: 17px;
   }
   .cart-item .unit {
     font-size: 14px;
-    color: #a1909a;
+    color: #6b675f;
     margin-top: 6px;
   }
 
@@ -58,11 +63,11 @@
     width: 32px;
     height: 32px;
     background-color: white;
-    border: 1px solid #e3c9d4;
-    color: #8d4260;
+    border: 1px solid #dcd8d0;
+    color: #7a5f33;
     font-size: 16px;
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: 0;
   }
   .count-value {
     width: 34px;
@@ -72,16 +77,17 @@
 
   /* 한 줄 합계 */
   .cart-item .sum {
-    width: 120px;
+    width: 130px;
     text-align: right;
-    color: #b9557a;
-    font-size: 18px;
-    font-weight: bold;
+    color: #111111;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 22px;
+    font-weight: 500;
   }
   .cart-item .del {
     background: none;
     border: none;
-    color: #bda6b0;
+    color: #8e897f;
     font-size: 20px;
     cursor: pointer;
     padding: 0 4px;
@@ -173,9 +179,9 @@
   <div>&copy; 2026 PINKHOLIC</div>
 </footer>
 
-<script src="products.js?v=20261010-1532"></script>
+<script src="products.js?v=20261010-1555"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
-<script src="supabase.js?v=20261010-1532"></script>
+<script src="supabase.js?v=20261010-1555"></script>
 <script>
   // 장바구니를 화면에 그립니다.
   // (배송비·할인·적립 계산은 products.js 의 calcTotals 가 합니다)

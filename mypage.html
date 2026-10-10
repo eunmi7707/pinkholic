@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>마이페이지 - 핑크홀릭</title>
-<link rel="stylesheet" href="style.css?v=20261010-1532">
+<link rel="stylesheet" href="style.css?v=20261010-1555">
 
 <style>
   /* 이 페이지에서만 쓰는 디자인 */
@@ -21,8 +21,8 @@
   }
   .summary-box {
     background-color: white;
-    border: 1px solid #ecd9e0;
-    border-radius: 4px;
+    border: 1px solid #ecebe6;
+    border-radius: 0;
     width: 270px;
     box-sizing: border-box;
     padding: 26px 20px;
@@ -30,13 +30,14 @@
   }
   .summary-box .label {
     font-size: 15px;
-    color: #8a7079;
+    color: #6b675f;
     margin-bottom: 10px;
   }
   .summary-box .value {
-    font-size: 28px;
-    color: #b9557a;
-    font-weight: bold;
+    font-size: 36px;
+    color: #111111;
+    font-family: "Cormorant Garamond", serif;
+    font-weight: 500;
   }
   /* 누를 수 있는 칸 : 밑줄 없이, 손가락 모양과 테두리 색으로 알려줍니다 */
   a.summary-box {
@@ -45,7 +46,7 @@
     cursor: pointer;
   }
   a.summary-box:hover {
-    border-color: #b9557a;
+    border-color: #111111;
   }
   a.summary-box .label:after {
     content: " ›";
@@ -64,15 +65,16 @@
   }
   .member-inner {
     background-color: white;
-    border: 1px solid #ecd9e0;
-    border-radius: 4px;
+    border: 1px solid #ecebe6;
+    border-radius: 0;
     padding: 26px 28px;
   }
   .member-inner h3 {
     font-size: 17px;
-    color: #b9557a;
+    color: #111111;
     margin: 0 0 16px 0;
-    font-weight: normal;
+    font-family: "Noto Serif KR", serif;
+    font-weight: 300;
   }
   .member-line {
     display: flex;
@@ -81,10 +83,10 @@
   }
   .member-line .key {
     width: 110px;
-    color: #8a7079;
+    color: #6b675f;
   }
   .member-line .val {
-    color: #3f2c33;
+    color: #111111;
   }
   .member-inner .buttons {
     margin-top: 20px;
@@ -192,9 +194,9 @@
   <div>&copy; 2026 PINKHOLIC</div>
 </footer>
 
-<script src="products.js?v=20261010-1532"></script>
+<script src="products.js?v=20261010-1555"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
-<script src="supabase.js?v=20261010-1532"></script>
+<script src="supabase.js?v=20261010-1555"></script>
 <script>
   // 로그인 상태와 회원 정보를 보여줍니다.
   function drawMember() {

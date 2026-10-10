@@ -4,151 +4,239 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>핑크홀릭 - 어른의 반짝임, 감성 잡화</title>
-<link rel="stylesheet" href="style.css?v=20261010-1532">
-
+<link rel="stylesheet" href="style.css?v=20261010-1555">
 <style>
   /* 이 페이지에서만 쓰는 디자인 */
 
-  /* ===== 큰 배너 ===== */
+  /* ===== 큰 배너 : 왼쪽 글, 오른쪽 검은 바탕 위 브레이슬릿 사진 ===== */
   .banner {
-    /* 어두운 막(linear-gradient) + 백화점 사진을 겹쳐서 글씨가 잘 보이게 합니다 */
-    background-image:
-      linear-gradient(rgba(45, 28, 35, 0.62), rgba(45, 28, 35, 0.62)),
-      url("https://images.unsplash.com/photo-1766847733845-330a163ab279?w=1600");
-    background-size: cover;       /* 사진을 화면 폭에 꽉 채웁니다 */
-    background-position: center;  /* 가운데를 기준으로 자릅니다 */
-    color: white;
-    text-align: center;
-    padding: 120px 20px;
+    background-color: #0a0a0a;
+    color: #f5f3ee;
+    overflow: hidden;
+  }
+  .banner-inner {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 40px;
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 40px;
+    min-height: 620px;
+  }
+  .banner-text {
+    flex: 1 1 380px;
+    padding: 80px 0;
+  }
+  .banner-photo {
+    flex: 1 1 520px;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+  }
+  .banner-photo img {
+    width: 100%;
+    display: block;
+    /* 사진 가장자리를 검은 배경으로 부드럽게 녹여 사각형 테두리가 보이지 않게 합니다 */
+    -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 55%, transparent 100%);
+    mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 55%, transparent 100%);
+  }
+  .banner .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 14px;
+    letter-spacing: 0.4em;
+    color: #c2a26a;
+    margin: 0 0 26px 0;
+  }
+  .banner .eyebrow::before {
+    content: "";
+    width: 40px;
+    height: 1px;
+    background-color: #c2a26a;
   }
   .banner h2 {
-    font-size: 30px;
-    font-weight: normal;
-    letter-spacing: 2px;
-    margin: 0 0 14px 0;
+    font-family: "Noto Serif KR", serif;
+    font-size: 46px;
+    font-weight: 300;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    margin: 0 0 18px 0;
   }
   .banner p {
-    font-size: 17px;
-    color: #f2e6ea;
-    margin: 0 0 32px 0;
+    max-width: 420px;
+    font-size: 15px;
+    line-height: 1.9;
+    color: #bdb8ad;
+    margin: 0 0 40px 0;
   }
   .banner button {
-    background-color: #b9557a;
-    color: white;
-    border: none;
-    padding: 16px 46px;
-    font-size: 16px;
-    letter-spacing: 2px;
-    border-radius: 4px;
+    background-color: transparent;
+    color: #c2a26a;
+    border: 1px solid #c2a26a;
+    padding: 17px 44px;
+    font-size: 13px;
+    letter-spacing: 0.24em;
     cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  .banner button:hover {
+    background-color: #c2a26a;
+    color: #0a0a0a;
   }
 
-  /* ===== 검색창 ===== */
+  /* ===== 검색창 : 밑줄 하나 ===== */
   .search {
     text-align: center;
-    margin-top: 28px;
+    margin-top: 30px;
   }
   .search input {
-    width: 320px;
+    width: 360px;
     max-width: 80%;
-    padding: 12px 16px;
-    font-size: 15px;
-    border: 1px solid #e3c9d4;
-    border-radius: 3px;
+    padding: 12px 4px;
+    font-size: 14px;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    text-align: center;
+    border: none;
+    border-bottom: 1px solid #111111;
+    background: transparent;
     box-sizing: border-box;
   }
+  .search input:focus {
+    outline: none;
+    border-bottom-color: #c2a26a;
+  }
 
-  /* ===== 카테고리 버튼 ===== */
+  /* ===== 카테고리 : 글자 탭 ===== */
   .categories {
     text-align: center;
-    margin-top: 26px;
+    margin-top: 30px;
   }
   .cat-btn {
-    background-color: white;
-    color: #8d4260;
-    border: 1px solid #e3c9d4;
-    padding: 10px 24px;
-    margin: 0 4px;
-    font-size: 15px;
-    border-radius: 3px;
+    background-color: transparent;
+    color: #6b675f;
+    border: none;
+    border-bottom: 1px solid transparent;
+    padding: 10px 4px;
+    margin: 0 16px;
+    font-size: 13px;
+    letter-spacing: 0.16em;
     cursor: pointer;
   }
-  .cat-btn.active {      /* 지금 선택된 버튼 */
-    background-color: #b9557a;
-    color: white;
-    border-color: #b9557a;
+  .cat-btn:hover {
+    color: #111111;
+  }
+  .cat-btn.active {      /* 지금 선택된 탭 */
+    color: #111111;
+    border-bottom-color: #c2a26a;
   }
 
-  /* ===== 쇼핑몰 소개 ===== */
+  /* ===== 쇼핑몰 소개 : 검은 띠 ===== */
   .about {
-    background-color: #f6ecf1;
-    padding: 70px 20px;
+    background-color: #0a0a0a;
+    color: #f5f3ee;
+    padding: 110px 20px;
   }
   .about-inner {
-    max-width: 900px;
+    max-width: 1080px;
     margin: 0 auto;
     text-align: center;
   }
   .about h2 {
-    font-size: 24px;
-    font-weight: normal;
-    letter-spacing: 3px;
-    margin: 0 0 18px 0;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 30px;
+    font-weight: 400;
+    letter-spacing: 0.35em;
+    padding-left: 0.35em;
+    color: #c2a26a;
+    margin: 0 0 30px 0;
   }
   .about-text {
+    font-family: "Noto Serif KR", serif;
     font-size: 16px;
-    line-height: 2;
-    color: #6b5560;
-    margin: 0 0 45px 0;
+    font-weight: 300;
+    line-height: 2.2;
+    color: #d9d6cf;
+    margin: 0 0 64px 0;
   }
   .about-points {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 22px;
+    border-top: 1px solid #2a2824;
   }
   .point {
-    background-color: white;
-    border: 1px solid #e8d3dc;
-    border-radius: 4px;
-    width: 270px;
+    flex: 1 1 280px;
     box-sizing: border-box;
-    padding: 28px 22px;
+    padding: 44px 30px 10px 30px;
+  }
+  .point + .point {
+    border-left: 1px solid #2a2824;
   }
   .point h3 {
+    font-family: "Noto Serif KR", serif;
     font-size: 17px;
-    color: #b9557a;
-    margin: 0 0 10px 0;
+    font-weight: 400;
+    color: #f5f3ee;
+    margin: 0 0 14px 0;
+  }
+  .point h3::before {
+    content: "";
+    display: block;
+    width: 24px;
+    height: 1px;
+    margin: 0 auto 18px auto;
+    background-color: #c2a26a;
   }
   .point p {
-    font-size: 15px;
-    line-height: 1.8;
-    color: #6b5560;
+    font-size: 14px;
+    line-height: 1.9;
+    color: #bdb8ad;
     margin: 0;
   }
 
   /* ===== 휴대폰 화면 ===== */
+  @media (max-width: 760px) {
+    /* 사진을 위에, 글을 아래에 둡니다 */
+    .banner-inner {
+      min-height: 0;
+      padding: 0 22px;
+      gap: 0;
+    }
+    .banner-photo {
+      order: -1;
+      margin: 0 -22px;
+    }
+    .banner-text {
+      padding: 10px 0 54px 0;
+    }
+  }
   @media (max-width: 560px) {
-    .banner {
-      padding: 60px 18px;
+    .banner .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.3em;
+      margin-bottom: 18px;
     }
     .banner h2 {
-      font-size: 21px;
-      letter-spacing: 1px;
-      line-height: 1.5;
+      font-size: 28px;
+      line-height: 1.4;
     }
     .banner p {
-      font-size: 15px;
-      margin-bottom: 24px;
+      font-size: 14px;
+      margin-bottom: 28px;
     }
     .banner button {
-      padding: 14px 30px;
-      font-size: 15px;
+      padding: 15px 30px;
+      font-size: 12px;
     }
 
     .search {
-      margin-top: 20px;
-      padding: 0 16px;
+      margin-top: 22px;
+      padding: 0 20px;
     }
     .search input {
       width: 100%;
@@ -156,41 +244,44 @@
       font-size: 16px;   /* 16px 보다 작으면 아이폰에서 화면이 확대됩니다 */
     }
 
-    /* 카테고리 버튼 : 한 줄에 네 개가 들어가도록 */
+    /* 카테고리 탭 : 한 줄에 네 개 */
     .categories {
-      margin-top: 16px;
+      margin-top: 18px;
       padding: 0 12px;
       display: flex;
-      gap: 6px;
+      gap: 4px;
     }
     .cat-btn {
       flex: 1;
       margin: 0;
-      padding: 11px 4px;
-      font-size: 14px;
+      padding: 11px 2px;
+      font-size: 12px;
+      letter-spacing: 0.06em;
     }
 
     .about {
-      padding: 45px 18px;
+      padding: 64px 20px;
     }
     .about h2 {
-      font-size: 20px;
+      font-size: 22px;
+      letter-spacing: 0.25em;
+      padding-left: 0.25em;
     }
     .about-text {
-      font-size: 15px;
-      line-height: 1.9;
-      margin-bottom: 30px;
+      font-size: 14px;
+      line-height: 2;
+      margin-bottom: 40px;
     }
     /* 소개 문장의 줄바꿈은 넓은 화면에서만 씁니다 */
     .about-text br {
       display: none;
     }
-    .about-points {
-      gap: 14px;
-    }
     .point {
-      width: 100%;
-      padding: 22px 18px;
+      padding: 30px 6px 20px 6px;
+    }
+    .point + .point {
+      border-left: none;
+      border-top: 1px solid #2a2824;
     }
   }
 </style>
@@ -215,9 +306,17 @@
 
 <!-- 큰 배너 -->
 <div class="banner">
-  <h2>가을 기획전 &middot; 전 상품 19% 할인</h2>
-  <p>오래 두고 쓰는 것들만 골랐습니다. 3만원 이상 무료배송.</p>
-  <button onclick="showAlert()">기획전 보러가기</button>
+  <div class="banner-inner">
+    <div class="banner-text">
+      <p class="eyebrow">AUTUMN COLLECTION</p>
+      <h2>가을 기획전<br>전 상품 19% 할인</h2>
+      <p>오래 두고 쓰는 것들만 골랐습니다. 3만원 이상 무료배송.</p>
+      <button onclick="showAlert()">기획전 보러가기</button>
+    </div>
+    <div class="banner-photo">
+      <img src="https://images.unsplash.com/photo-1638617501607-5dfb8b079ebf?w=1600" alt="검은 바탕 위 골드와 다이아몬드가 촘촘히 세팅된 브레이슬릿">
+    </div>
+  </div>
 </div>
 
 <!-- 상품 목록 제목 -->
@@ -282,9 +381,9 @@
   <div>&copy; 2026 PINKHOLIC</div>
 </footer>
 
-<script src="products.js?v=20261010-1532"></script>
+<script src="products.js?v=20261010-1555"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
-<script src="supabase.js?v=20261010-1532"></script>
+<script src="supabase.js?v=20261010-1555"></script>
 <script>
   // 지금 선택된 카테고리를 기억해 둡니다.
   var currentCategory = "전체";

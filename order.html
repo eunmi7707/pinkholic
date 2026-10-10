@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>주문서 - 핑크홀릭</title>
-<link rel="stylesheet" href="style.css?v=20261010-1532">
+<link rel="stylesheet" href="style.css?v=20261010-1555">
 
 <style>
   /* 이 페이지에서만 쓰는 디자인 */
@@ -18,15 +18,16 @@
   /* 주문서의 칸 하나 (주문 상품 / 배송지) */
   .order-section {
     background-color: white;
-    border: 1px solid #ecd9e0;
-    border-radius: 4px;
+    border: 1px solid #ecebe6;
+    border-radius: 0;
     padding: 26px 28px 8px 28px;
     margin-bottom: 18px;
   }
   .order-section h3 {
     font-size: 18px;
-    font-weight: normal;
-    color: #3f2c33;
+    font-family: "Noto Serif KR", serif;
+    font-weight: 300;
+    color: #111111;
     margin: 0 0 18px 0;
   }
 
@@ -36,7 +37,7 @@
     align-items: center;
     gap: 16px;
     padding: 12px 0;
-    border-top: 1px solid #f5e9ee;
+    border-top: 1px solid #f2f0ec;
   }
   .order-item:first-of-type {
     border-top: none;
@@ -46,7 +47,7 @@
     width: 64px;
     height: 64px;
     object-fit: cover;
-    border-radius: 3px;
+    border-radius: 0;
     flex-shrink: 0;
   }
   .order-item .info {
@@ -55,12 +56,14 @@
   }
   .order-item .count {
     font-size: 14px;
-    color: #a1909a;
+    color: #6b675f;
     margin-top: 4px;
   }
   .order-item .sum {
-    color: #3f2c33;
-    font-weight: bold;
+    color: #111111;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 1.15em;
+    font-weight: 500;
     white-space: nowrap;
   }
   .order-section .items {
@@ -71,8 +74,8 @@
     width: 100%;
     padding: 12px 14px;
     font-size: 15px;
-    border: 1px solid #e3c9d4;
-    border-radius: 3px;
+    border: 1px solid #dcd8d0;
+    border-radius: 0;
     background-color: white;
     box-sizing: border-box;
   }
@@ -93,7 +96,7 @@
   .agree .error {
     display: none;
     font-size: 13px;
-    color: #e0356f;
+    color: #b3261e;
     margin-top: 8px;
   }
   .agree.wrong .error {
@@ -103,8 +106,8 @@
   /* 로그인이 필요하거나 장바구니가 비었을 때 */
   .order-box .empty {
     background-color: white;
-    border: 1px solid #ecd9e0;
-    border-radius: 4px;
+    border: 1px solid #ecebe6;
+    border-radius: 0;
   }
 
   /* ===== 휴대폰 화면 ===== */
@@ -163,9 +166,9 @@
   <div>&copy; 2026 PINKHOLIC</div>
 </footer>
 
-<script src="products.js?v=20261010-1532"></script>
+<script src="products.js?v=20261010-1555"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
-<script src="supabase.js?v=20261010-1532"></script>
+<script src="supabase.js?v=20261010-1555"></script>
 <script>
   // 중복 방지 번호 : 이 주문서 화면에서 하나만 만들어, 다시 눌러도 같은 번호를 보냅니다.
   // (응답이 늦어 주문하기를 두 번 눌러도 주문이 하나만 저장됩니다.)
