@@ -9,6 +9,13 @@
 <style>
   /* 이 페이지에서만 쓰는 디자인 */
 
+  /* 가입 화면은 로그인 화면보다 넓게 씁니다 */
+  .form-box,
+  .notice {
+    max-width: 680px;
+    box-sizing: border-box;   /* 안내 상자와 양식의 폭을 똑같이 맞춥니다 */
+  }
+
   /* 약관 동의 */
   .agree {
     border-top: 1px solid #f0e2e8;
@@ -32,7 +39,7 @@
   /* 가입 완료 화면 */
   .done {
     display: none;              /* 가입 전에는 숨겨둡니다 */
-    max-width: 520px;
+    max-width: 680px;
     margin: 0 auto;
     background-color: white;
     border: 1px solid #ecd9e0;
