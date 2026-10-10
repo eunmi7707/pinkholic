@@ -472,10 +472,24 @@ function updateNav() {
       logout();
       return false;
     };
+    // 로그인 중에는 회원가입 자리에 회원 이름을 보여주고, 누르면 마이페이지로 갑니다.
     if (joinLink) {
-      joinLink.style.display = "none";   // 로그인 중에는 회원가입을 숨깁니다.
+      joinLink.textContent = shortName(user) + "님";
+      joinLink.href = "mypage.html";
+      joinLink.className = "me";
+      joinLink.title = user.email;   // 마우스를 올리면 이메일이 보입니다.
     }
   }
+}
+
+/* 메뉴에 보여줄 이름입니다. 이름이 없으면 이메일 @ 앞부분을 씁니다.
+   메뉴가 한 줄을 넘지 않도록 8글자까지만 보여줍니다.              */
+function shortName(user) {
+  var name = user.name || (user.email || "").split("@")[0];
+  if (name.length > 8) {
+    name = name.substring(0, 8) + "…";
+  }
+  return name;
 }
 
 function showAlert() {

@@ -88,6 +88,10 @@ nav a.now {           /* 지금 보고 있는 메뉴 */
   color: #b9557a;
   font-weight: bold;
 }
+nav a.me {            /* 로그인한 회원 이름 */
+  color: #b9557a;
+  font-weight: bold;
+}
 /* 장바구니 개수 : 동그란 표시 */
 #cartCount {
   display: inline-block;
