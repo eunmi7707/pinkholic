@@ -38,6 +38,23 @@
     color: #b9557a;
     font-weight: bold;
   }
+  /* 누를 수 있는 칸 : 밑줄 없이, 손가락 모양과 테두리 색으로 알려줍니다 */
+  a.summary-box {
+    display: block;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  a.summary-box:hover {
+    border-color: #b9557a;
+  }
+  a.summary-box .label:after {
+    content: " ›";
+  }
+
+  /* 찜한 상품 목록으로 내려갈 때 위쪽 메뉴에 제목이 가리지 않게 합니다 */
+  #wishSection {
+    scroll-margin-top: 80px;
+  }
 
   /* 회원 정보 상자 */
   .member-box {
@@ -142,14 +159,16 @@
 
 <!-- 내 정보 3칸 -->
 <div class="summary">
-  <div class="summary-box">
+  <!-- 누르면 아래 찜한 상품 목록으로 내려갑니다 -->
+  <a class="summary-box" href="#wishSection">
     <div class="label">찜한 상품</div>
     <div class="value" id="wishCount">0</div>
-  </div>
-  <div class="summary-box">
+  </a>
+  <!-- 누르면 장바구니로 갑니다 -->
+  <a class="summary-box" href="cart.html">
     <div class="label">장바구니</div>
     <div class="value" id="cartValue">0</div>
-  </div>
+  </a>
   <div class="summary-box">
     <div class="label">적립금</div>
     <div class="value">0원</div>
@@ -160,7 +179,7 @@
 <div class="member-box" id="memberBox"></div>
 
 <!-- 찜한 상품 -->
-<h2 class="section-title">WISH LIST</h2>
+<h2 class="section-title" id="wishSection">WISH LIST</h2>
 <p class="section-title-sub">하트를 누른 상품입니다</p>
 
 <div class="products" id="wishList"></div>
