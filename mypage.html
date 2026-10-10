@@ -174,11 +174,12 @@
 </footer>
 
 <script src="products.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
+<script src="supabase.js"></script>
 <script>
   // 로그인 상태와 회원 정보를 보여줍니다.
   function drawMember() {
     var user = getLoginUser();
-    var member = getMember();
     var box = document.getElementById("memberBox");
 
     // 로그인하지 않았을 때
@@ -201,12 +202,18 @@
     box.innerHTML =
       '<div class="member-inner">' +
         '<h3>회원 정보</h3>' +
-        '<div class="member-line"><span class="key">아이디</span><span class="val">' + member.id + '</span></div>' +
-        '<div class="member-line"><span class="key">이름</span><span class="val">' + member.name + '</span></div>' +
-        '<div class="member-line"><span class="key">이메일</span><span class="val">' + member.email + '</span></div>' +
-        '<div class="member-line"><span class="key">휴대폰</span><span class="val">' + (member.phone || "-") + '</span></div>' +
-        '<div class="member-line"><span class="key">가입일</span><span class="val">' + member.joinedAt + '</span></div>' +
+        '<div class="member-line"><span class="key">이름</span><span class="val">' + safeText(user.name) + '</span></div>' +
+        '<div class="member-line"><span class="key">이메일</span><span class="val">' + safeText(user.email) + '</span></div>' +
+        '<div class="member-line"><span class="key">휴대폰</span><span class="val">' + safeText(user.phone || "-") + '</span></div>' +
+        '<div class="member-line"><span class="key">가입일</span><span class="val">' + safeText(user.joinedAt) + '</span></div>' +
       '</div>';
+  }
+
+  // 회원이 적은 글자에 < > 같은 기호가 있어도 화면이 깨지지 않게 합니다.
+  function safeText(text) {
+    var div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
   }
 
   // 찜한 상품을 카드로 그립니다.

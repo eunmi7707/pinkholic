@@ -2,7 +2,7 @@
    핑크홀릭 - 모든 페이지가 함께 쓰는 파일
 
    1) 상품 목록 (PRODUCTS)
-   2) 저장 기능 (찜하기 / 장바구니 / 회원 / 로그인)
+   2) 저장 기능 (찜하기 / 장바구니 / 로그인 상태)
    3) 공통으로 쓰는 작은 도구들
 
    상품을 추가하거나 고치실 때는 아래 PRODUCTS 목록만 바꾸시면
@@ -331,7 +331,6 @@ var PRODUCTS = [
 /* 브라우저에 값을 저장하는 이름표들 */
 var WISH_KEY   = "pinkholic_wish";     // 찜한 상품
 var CART_KEY   = "pinkholic_cart";     // 장바구니
-var MEMBER_KEY = "pinkholic_member";   // 가입한 회원 정보
 var LOGIN_KEY  = "pinkholic_login";    // 지금 로그인한 사람
 
 /* 저장된 값을 읽어옵니다. 없거나 읽지 못하면 기본값을 돌려줍니다. */
@@ -412,27 +411,11 @@ function cartTotalCount() {
   return total;
 }
 
-/* --- 회원 / 로그인 --- */
-function getMember()      { return loadData(MEMBER_KEY, null); }
-function setMember(m)     { saveData(MEMBER_KEY, m); }
+/* --- 로그인 --- */
+/* 지금 로그인한 회원을 기억해 둡니다. ({email, name, phone, joinedAt})
+   가입·로그인·로그아웃은 supabase.js 가 맡습니다.                     */
 function getLoginUser()   { return loadData(LOGIN_KEY, null); }
 function setLoginUser(u)  { saveData(LOGIN_KEY, u); }
-function logout() {
-  saveData(LOGIN_KEY, null);
-  alert("로그아웃되었습니다.");
-  location.href = "index.html";
-}
-
-/* 비밀번호를 그대로 저장하지 않기 위해 숫자로 바꿔 둡니다.
-   ※ 연습용입니다. 브라우저 안에서만 확인하므로 실제 보안 수단이 아닙니다.
-      실제 서비스는 서버에서 검사해야 합니다.                        */
-function hashPassword(text) {
-  var number = 5381;
-  for (var i = 0; i < text.length; i++) {
-    number = ((number * 33) ^ text.charCodeAt(i)) >>> 0;
-  }
-  return number.toString(16);
-}
 
 
 /* ===== 3) 공통으로 쓰는 작은 도구들 ===== */
