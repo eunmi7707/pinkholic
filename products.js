@@ -182,6 +182,45 @@ var PRODUCTS = [
     points: ["장식 길이 7 cm / 무게 34g", "황동 (사용할수록 색이 변합니다)", "고리 포함"]
   },
   {
+    id: 17,
+    name: "진주 헤어핀 2종 세트",
+    category: "패션소품",
+    oldPrice: 32000,
+    price: 25900,
+    img: "https://images.unsplash.com/photo-1564624791497-06ce5d1643ec?w=900",
+    badge: "",
+    big: false,
+    hideOnAll: true,
+    desc: "작은 진주를 촘촘히 박은 넓은 핀과, 진주를 한 줄로 이은 가는 핀을 한 세트로 묶었습니다. 앞머리를 넘겨 꽂기만 해도 얼굴 주변이 환해 보입니다.",
+    points: ["넓은 핀 7.5 cm / 가는 핀 6.5 cm", "인조진주 / 금속 골드 도금", "2개 한 세트"]
+  },
+  {
+    id: 18,
+    name: "레드 레더 드라이빙 장갑",
+    category: "패션소품",
+    oldPrice: 65000,
+    price: 52600,
+    img: "https://images.unsplash.com/photo-1642952180306-588f9eddce8e?w=900",
+    badge: "",
+    big: false,
+    hideOnAll: true,
+    desc: "손가락 끝을 터서 운전대나 휴대폰을 잡기 편한 가죽 장갑입니다. 손등에 구멍을 내어 답답하지 않고, 붉은 색이 어두운 외투 소매 끝에서 포인트가 됩니다.",
+    points: ["S / M (한 치수 선택)", "양가죽", "손목 똑딱단추 여밈"]
+  },
+  {
+    id: 19,
+    name: "레더 베레모",
+    category: "패션소품",
+    oldPrice: 72000,
+    price: 58300,
+    img: "https://images.unsplash.com/photo-1756197257107-2aab275e6828?w=900",
+    badge: "",
+    big: false,
+    hideOnAll: true,
+    desc: "검정 가죽으로 만든 베레모입니다. 비스듬히 얹기만 해도 차림이 정돈되어 보이고, 가죽이라 니트 베레보다 덜 캐주얼해 출근길에도 쓰기 좋습니다.",
+    points: ["머리둘레 56~58 cm", "인조가죽 / 안감 면", "모양이 잡히도록 접지 말고 보관"]
+  },
+  {
     id: 10,
     name: "소프트 레더 미니 숄더백",
     category: "가방",
