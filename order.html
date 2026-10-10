@@ -67,14 +67,6 @@
     padding-bottom: 18px;
   }
 
-  /* 주소 칸은 우편번호를 짧게 */
-  .field .postcode {
-    max-width: 180px;
-    margin-bottom: 8px;
-  }
-  .field .address-line {
-    margin-bottom: 8px;
-  }
   .field select {
     width: 100%;
     padding: 12px 14px;
@@ -280,10 +272,8 @@
         '</div>' +
         '<div class="field" id="fieldAddress">' +
           '<label>주소 <span class="star">*</span></label>' +
-          '<input type="text" class="postcode" id="shipPostcode" placeholder="우편번호 5자리">' +
-          '<input type="text" class="address-line" id="shipAddress" placeholder="기본 주소 (도로명 또는 지번)">' +
-          '<input type="text" id="shipDetail" placeholder="상세 주소 (동·호수)">' +
-          '<div class="error" id="addressError">주소를 입력해 주세요.</div>' +
+          '<input type="text" id="shipAddress" placeholder="동·호수까지 입력해 주세요">' +
+          '<div class="error">주소를 입력해 주세요.</div>' +
         '</div>' +
         '<div class="field">' +
           '<label>배송 메모</label>' +
@@ -358,7 +348,6 @@
   function pay() {
     var name = document.getElementById("shipName").value.trim();
     var phone = document.getElementById("shipPhone").value.trim();
-    var postcode = document.getElementById("shipPostcode").value.trim();
     var address = document.getElementById("shipAddress").value.trim();
     var ok = true;
 
@@ -369,18 +358,8 @@
       ok = false;
     }
 
-    // 주소 : 우편번호 5자리와 기본 주소가 있어야 합니다.
-    var addressError = document.getElementById("addressError");
-    if (!/^\d{5}$/.test(postcode)) {
-      addressError.textContent = "우편번호 5자리를 숫자로 입력해 주세요.";
-      mark("fieldAddress", true);
+    if (!mark("fieldAddress", address === "")) {
       ok = false;
-    } else if (address === "") {
-      addressError.textContent = "기본 주소를 입력해 주세요.";
-      mark("fieldAddress", true);
-      ok = false;
-    } else {
-      mark("fieldAddress", false);
     }
 
     var agreeBox = document.getElementById("fieldAgree");
