@@ -198,7 +198,7 @@ function loadProducts(done) {
    (금액은 함수가 상품 표의 가격으로 다시 계산합니다.) */
 
 /* 주문하기 : 장바구니로 주문을 저장합니다.
-   ship 모양 : {name, phone, address, memo, payMethod}
+   ship 모양 : {name, phone, address, memo}
    성공하면 done(주문번호), 실패하면 done(null, 오류 문구) */
 function placeOrder(ship, done) {
   if (!sb) {
@@ -211,8 +211,7 @@ function placeOrder(ship, done) {
     ship_name: ship.name,
     ship_phone: ship.phone,
     ship_address: ship.address,
-    ship_memo: ship.memo,
-    pay_method: ship.payMethod
+    ship_memo: ship.memo
   }).then(function (res) {
     if (res.error) {
       // place_order 가 알려준 이유(한국어)는 그대로, 그 밖의 오류는 한국어 안내로 바꿉니다.

@@ -504,7 +504,7 @@ nav a.me {            /* 로그인한 회원 이름 */
   .bottom-space { height: 40px; }
 }
 
-/* ===== 결제 금액 상자 (장바구니 / 주문서) ===== */
+/* ===== 주문 금액 상자 (장바구니 / 주문서 / 주문 완료) ===== */
 .total-box {
   background-color: white;
   border: 1px solid #ecd9e0;

@@ -221,10 +221,10 @@
         '</div>';
     }
 
-    // 결제 금액
+    // 주문 금액
     var isMember = getLoginUser() ? true : false;
     html +=
-      totalBoxHtml(calcTotals(cart, isMember), isMember, "결제 예정 금액") +
+      totalBoxHtml(calcTotals(cart, isMember), isMember, "주문 금액") +
       '<div class="order-row">' +
         '<button class="main-btn" onclick="order()">주문하기</button>' +
       '</div>';

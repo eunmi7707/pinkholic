@@ -148,7 +148,7 @@ function orderableCart() {
   return list;
 }
 
-/* --- 결제 금액 (장바구니와 주문서가 함께 씁니다) --- */
+/* --- 주문 금액 (장바구니와 주문서가 함께 씁니다) --- */
 var FREE_SHIP   = 30000;   // 이 금액 이상이면 배송비 무료
 var SHIP_FEE    = 3000;    // 배송비
 var MEMBER_SALE = 3;       // 회원 할인 (%) - 로그인했을 때만
@@ -159,7 +159,7 @@ function cut10(number) {
   return Math.floor(number / 10) * 10;
 }
 
-/* 장바구니로 결제 금액을 계산합니다. (목록에서 사라진 상품은 뺍니다) */
+/* 장바구니로 주문 금액을 계산합니다. (목록에서 사라진 상품은 뺍니다) */
 function calcTotals(cart, isMember) {
   var oldTotal = 0;     // 할인 전 가격 합계
   var goodsTotal = 0;   // 판매 가격 합계
@@ -183,12 +183,12 @@ function calcTotals(cart, isMember) {
     saleDiscount: oldTotal - goodsTotal,   // 기획전 할인
     memberDiscount: memberDiscount,        // 회원 할인 (로그인 전에는 안내만)
     shipFee: shipFee,
-    pay: payGoods + shipFee,               // 결제할 금액
+    pay: payGoods + shipFee,               // 주문 금액 (낼 돈)
     save: cut10(payGoods * SAVE_RATE / 100)   // 적립 예정 금액
   };
 }
 
-/* 결제 금액 상자를 만듭니다. finalLabel 은 마지막 줄 이름입니다. */
+/* 주문 금액 상자를 만듭니다. finalLabel 은 마지막 줄 이름입니다. */
 function totalBoxHtml(t, isMember, finalLabel) {
   var memberLine;
   var saveText;

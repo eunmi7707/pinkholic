@@ -231,29 +231,33 @@ grant execute on function public.set_wish(jsonb) to authenticated;
 -- ============================================================
 -- 주문 표 (orders, order_items)
 --
--- 주문서에서 결제하기를 누르면 place_order 함수가 주문을 저장합니다.
+-- 주문서에서 주문하기를 누르면 place_order 함수가 주문을 저장합니다.
 -- 금액은 사이트가 보낸 값을 믿지 않고 이 함수가 상품 표의 가격으로 다시 계산합니다.
--- (아직 결제 서비스가 연결되지 않아 상태는 '결제 대기'로 저장합니다.)
+-- (결제 기능은 없습니다. 주문은 '주문 접수' 상태로 저장됩니다.)
 -- ============================================================
 
 create table if not exists public.orders (
   id              bigint generated always as identity primary key,
   order_no        text    unique,                     -- 주문 번호 (예: PH261010-00001)
   user_id         uuid    not null references auth.users(id) on delete cascade,
-  status          text    not null default '결제 대기',
+  status          text    not null default '주문 접수',
   ship_name       text    not null,                   -- 받는 분
   ship_phone      text    not null,
   ship_address    text    not null,
   ship_memo       text    not null default '',
-  pay_method      text    not null check (pay_method in ('card', 'bank', 'kakao')),
   old_total       integer not null,                   -- 할인 전 상품 금액
   sale_discount   integer not null,                   -- 기획전 할인
   member_discount integer not null,                   -- 회원 할인
   ship_fee        integer not null,
-  pay_total       integer not null,                   -- 결제 금액
+  pay_total       integer not null,                   -- 주문 금액
   save_point      integer not null,                   -- 적립 예정
   created_at      timestamptz not null default now()
 );
+
+-- 결제 기능을 지우면서 바꾼 것 (이미 표가 있던 경우)
+alter table public.orders drop column if exists pay_method;
+alter table public.orders alter column status set default '주문 접수';
+update public.orders set status = '주문 접수' where status = '결제 대기';
 
 -- 주문한 상품 (주문할 때의 이름·가격을 그대로 남겨 둡니다)
 create table if not exists public.order_items (
@@ -283,10 +287,13 @@ create policy "본인 주문 상품 보기" on public.order_items
 
 grant select on public.orders, public.order_items to authenticated;
 
+-- 결제 수단을 받던 예전 주문 함수를 지웁니다.
+drop function if exists public.place_order(jsonb, text, text, text, text, text);
+
 -- 주문하기 : 주문을 저장하고 회원 장바구니를 비운 뒤 주문 번호를 돌려줍니다.
 -- items 모양 : [{"id": 상품번호, "count": 수량}, ...]
 create or replace function public.place_order(
-  items jsonb, ship_name text, ship_phone text, ship_address text, ship_memo text, pay_method text
+  items jsonb, ship_name text, ship_phone text, ship_address text, ship_memo text
 )
 returns text
 language plpgsql
@@ -308,9 +315,6 @@ begin
   end if;
   if coalesce(trim(ship_name), '') = '' or coalesce(trim(ship_phone), '') = '' or coalesce(trim(ship_address), '') = '' then
     raise exception '배송지를 모두 입력해 주세요.';
-  end if;
-  if pay_method not in ('card', 'bank', 'kakao') then
-    raise exception '결제 수단을 골라 주세요.';
   end if;
 
   -- 주문할 상품 : 판매 중인 상품만, 같은 상품은 합치고, 수량은 1~99개
@@ -335,9 +339,9 @@ begin
   member_cut := floor(goods_sum * 3 / 100.0 / 10) * 10;          -- 회원 할인 3%, 10원 단위 버림
   fee := case when goods_sum >= 30000 then 0 else 3000 end;       -- 3만원 이상 무료배송
 
-  insert into public.orders (user_id, ship_name, ship_phone, ship_address, ship_memo, pay_method,
+  insert into public.orders (user_id, ship_name, ship_phone, ship_address, ship_memo,
                              old_total, sale_discount, member_discount, ship_fee, pay_total, save_point)
-  values (uid, trim(ship_name), trim(ship_phone), trim(ship_address), coalesce(trim(ship_memo), ''), pay_method,
+  values (uid, trim(ship_name), trim(ship_phone), trim(ship_address), coalesce(trim(ship_memo), ''),
           old_sum, old_sum - goods_sum, member_cut, fee, goods_sum - member_cut + fee,
           floor((goods_sum - member_cut) * 1 / 100.0 / 10) * 10)       -- 적립 1%, 10원 단위 버림
   returning id into new_id;
@@ -356,5 +360,5 @@ begin
 end;
 $$;
 
-revoke execute on function public.place_order(jsonb, text, text, text, text, text) from public, anon;
-grant execute on function public.place_order(jsonb, text, text, text, text, text) to authenticated;
+revoke execute on function public.place_order(jsonb, text, text, text, text) from public, anon;
+grant execute on function public.place_order(jsonb, text, text, text, text) to authenticated;

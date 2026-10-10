@@ -57,13 +57,7 @@
     color: #8d4260;
     font-size: 14px;
   }
-  .done-head .pay-guide {
-    font-size: 14px;
-    color: #a1909a;
-    margin-top: 12px;
-  }
-
-  /* 주문 내용 칸 (주문 상품 / 배송지 / 결제 수단) */
+  /* 주문 내용 칸 (주문 상품 / 배송지 / 주문 정보) */
   .done-section {
     background-color: white;
     border: 1px solid #ecd9e0;
@@ -111,7 +105,7 @@
     white-space: nowrap;
   }
 
-  /* 배송지 · 결제 수단 : 이름표와 값 */
+  /* 배송지 · 주문 정보 : 이름표와 값 */
   .info-line {
     display: flex;
     gap: 16px;
@@ -225,8 +219,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
 <script src="supabase.js"></script>
 <script>
-  var PAY_NAMES = { card: "신용카드", bank: "무통장 입금", kakao: "카카오페이" };
-
   // 회원이 적은 글자에 < > 같은 기호가 있어도 화면이 깨지지 않게 합니다.
   function safeText(text) {
     var div = document.createElement("div");
@@ -266,7 +258,7 @@
         '</div>';
     }
 
-    // 결제 금액 : 주문할 때 저장해 둔 금액을 그대로 보여줍니다.
+    // 주문 금액 : 주문할 때 저장해 둔 금액을 그대로 보여줍니다.
     var totals = {
       oldTotal: order.old_total,
       saleDiscount: order.sale_discount,
@@ -280,11 +272,6 @@
       year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit"
     });
 
-    // 결제 수단별 안내 (아직 결제 서비스가 연결되지 않았습니다)
-    var payGuide = order.pay_method === "bank"
-      ? "안내해 드리는 계좌로 3일 안에 " + won(order.pay_total) + "을 입금해 주세요."
-      : "결제 서비스가 준비되면 결제 방법을 안내해 드립니다.";
-
     box.innerHTML =
       // 1) 주문 완료 인사와 주문 번호
       '<div class="done-head">' +
@@ -292,7 +279,6 @@
         '<h3>주문이 완료되었습니다</h3>' +
         '<div class="order-no">주문 번호 <b>' + safeText(order.order_no) + '</b></div>' +
         '<div class="status">' + safeText(order.status) + '</div>' +
-        '<div class="pay-guide">' + payGuide + '</div>' +
       '</div>' +
 
       // 2) 주문 상품
@@ -314,11 +300,10 @@
       '<div class="done-section">' +
         '<h3>주문 정보</h3>' +
         infoLine("주문 일시", orderedAt) +
-        infoLine("결제 수단", PAY_NAMES[order.pay_method] || order.pay_method) +
       '</div>' +
 
-      // 5) 결제 금액
-      totalBoxHtml(totals, true, "결제 금액") +
+      // 5) 주문 금액
+      totalBoxHtml(totals, true, "주문 금액") +
 
       '<div class="done-buttons">' +
         '<a class="line-btn" href="mypage.html">마이페이지</a>' +

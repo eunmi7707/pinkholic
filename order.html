@@ -15,7 +15,7 @@
     padding: 0 20px;
   }
 
-  /* 주문서의 칸 하나 (주문 상품 / 배송지 / 결제 수단) */
+  /* 주문서의 칸 하나 (주문 상품 / 배송지) */
   .order-section {
     background-color: white;
     border: 1px solid #ecd9e0;
@@ -79,36 +79,6 @@
   #memoText {
     margin-top: 8px;
     display: none;
-  }
-
-  /* 결제 수단 : 누르는 버튼 모양 */
-  .pay-methods {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  .pay-methods label {
-    flex: 1 1 140px;
-    border: 1px solid #e3c9d4;
-    border-radius: 3px;
-    padding: 14px 10px;
-    text-align: center;
-    cursor: pointer;
-    color: #6b5560;
-  }
-  .pay-methods input {
-    display: none;
-  }
-  .pay-methods label.on {
-    border-color: #b9557a;
-    color: #b9557a;
-    font-weight: bold;
-    background-color: #fff3f7;
-  }
-  .pay-note {
-    font-size: 13px;
-    color: #a1909a;
-    margin: 12px 0 18px 0;
   }
 
   /* 동의 */
@@ -288,33 +258,21 @@
         '</div>' +
       '</div>' +
 
-      // 3) 결제 수단
-      '<div class="order-section">' +
-        '<h3>결제 수단</h3>' +
-        '<div class="pay-methods" id="payMethods">' +
-          '<label class="on"><input type="radio" name="pay" value="card" checked onchange="changePay()">신용카드</label>' +
-          '<label><input type="radio" name="pay" value="bank" onchange="changePay()">무통장 입금</label>' +
-          '<label><input type="radio" name="pay" value="kakao" onchange="changePay()">카카오페이</label>' +
-        '</div>' +
-        '<div class="pay-note" id="payNote"></div>' +
-      '</div>' +
+      // 3) 주문 금액 (로그인한 회원이므로 회원 할인이 들어갑니다)
+      totalBoxHtml(calcTotals(cart, true), true, "주문 금액") +
 
-      // 4) 결제 금액 (로그인한 회원이므로 회원 할인이 들어갑니다)
-      totalBoxHtml(calcTotals(cart, true), true, "최종 결제 금액") +
-
-      // 5) 동의와 결제 버튼
+      // 4) 동의와 주문 버튼
       '<div class="agree" id="fieldAgree">' +
-        '<label><input type="checkbox" id="orderAgree"> 주문 내용을 확인했으며 결제에 동의합니다 <span class="star">*</span></label>' +
+        '<label><input type="checkbox" id="orderAgree"> 주문 내용을 확인했으며 주문에 동의합니다 <span class="star">*</span></label>' +
         '<div class="error">주문 내용 확인에 동의해 주세요.</div>' +
       '</div>' +
       '<div class="order-row">' +
-        '<button class="main-btn" id="payBtn" onclick="pay()">' + won(calcTotals(cart, true).pay) + ' 결제하기</button>' +
+        '<button class="main-btn" id="orderBtn" onclick="submitOrder()">' + won(calcTotals(cart, true).pay) + ' 주문하기</button>' +
       '</div>';
 
     // 회원 정보로 받는 분과 휴대폰을 미리 채워 둡니다.
     document.getElementById("shipName").value = user.name || "";
     document.getElementById("shipPhone").value = user.phone || "";
-    changePay();
   }
 
   // 배송 메모에서 "직접 입력"을 고르면 입력 칸을 보여줍니다.
@@ -323,29 +281,8 @@
     document.getElementById("memoText").style.display = direct ? "block" : "none";
   }
 
-  // 고른 결제 수단을 표시하고 안내 문구를 바꿉니다.
-  function changePay() {
-    var notes = {
-      card: "신용카드 결제는 준비 중입니다. 주문은 '결제 대기'로 접수됩니다.",
-      bank: "주문 후 안내해 드리는 계좌로 3일 안에 입금해 주세요.",
-      kakao: "카카오페이 결제는 준비 중입니다. 주문은 '결제 대기'로 접수됩니다."
-    };
-    var labels = document.getElementById("payMethods").getElementsByTagName("label");
-    var chosen = "card";
-    for (var i = 0; i < labels.length; i++) {
-      var radio = labels[i].getElementsByTagName("input")[0];
-      if (radio.checked) {
-        labels[i].classList.add("on");
-        chosen = radio.value;
-      } else {
-        labels[i].classList.remove("on");
-      }
-    }
-    document.getElementById("payNote").textContent = notes[chosen];
-  }
-
-  // 결제하기 : 입력한 내용을 확인합니다.
-  function pay() {
+  // 주문하기 : 입력한 내용을 확인하고 주문을 저장합니다.
+  function submitOrder() {
     // 주문서를 연 뒤 다른 창에서 장바구니를 비웠을 수 있으니 한 번 더 확인합니다.
     if (orderableCart().length === 0) {
       alert("장바구니가 비어 있어 주문할 수 없습니다.\n상품을 먼저 담아주세요.");
@@ -390,7 +327,7 @@
     }
 
     // Supabase 에 주문을 저장합니다. 두 번 눌리지 않게 버튼을 잠급니다.
-    var btn = document.getElementById("payBtn");
+    var btn = document.getElementById("orderBtn");
     var btnText = btn.textContent;
     btn.disabled = true;
     btn.textContent = "주문하는 중...";
@@ -399,8 +336,7 @@
       name: name,
       phone: phone,
       address: address,
-      memo: memo,
-      payMethod: document.querySelector('input[name="pay"]:checked').value
+      memo: memo
     }, function (orderNo, errorText) {
       if (!orderNo) {
         btn.disabled = false;
