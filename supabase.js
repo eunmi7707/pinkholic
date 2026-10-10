@@ -197,34 +197,57 @@ function loadProducts(done) {
    주문은 Supabase 의 place_order 함수가 저장합니다.
    (금액은 함수가 상품 표의 가격으로 다시 계산합니다.) */
 
+/* 이 시간 안에 Supabase 가 답하지 않으면 기다리기를 멈추고 다시 누르라고 안내합니다. */
+var ORDER_TIMEOUT = 20000;   // 20초
+
 /* 주문하기 : 장바구니로 주문을 저장합니다.
-   ship 모양 : {name, phone, address, memo}
-   성공하면 done(주문번호), 실패하면 done(null, 오류 문구) */
+   ship 모양 : {name, phone, address, memo, requestId}
+   requestId 는 중복 방지 번호입니다. 같은 번호로 다시 보내면 새로 저장하지 않고 그 주문 번호를 돌려받습니다.
+   성공하면 done(주문번호), 실패하면 done(null, 오류 문구) — 무슨 일이 있어도 done 은 꼭 한 번 부릅니다. */
 function placeOrder(ship, done) {
   if (!sb) {
     done(null, NETWORK_ERROR.text);
     return;
   }
 
-  sb.rpc("place_order", {
-    items: orderableCart(),
-    ship_name: ship.name,
-    ship_phone: ship.phone,
-    ship_address: ship.address,
-    ship_memo: ship.memo
-  }).then(function (res) {
-    if (res.error) {
-      // place_order 가 알려준 이유(한국어)는 그대로, 그 밖의 오류는 한국어 안내로 바꿉니다.
-      done(null, res.error.code === "P0001" ? res.error.message : "주문을 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.");
-      return;
+  var finished = false;
+  function finish(orderNo, errorText) {
+    if (finished) {
+      return;   // 시간이 지나 이미 안내한 뒤에 늦게 온 답은 무시합니다. (다시 누르면 같은 주문 번호를 받습니다)
     }
-    // Supabase 장바구니는 함수가 비웠으니 이 브라우저의 장바구니도 비웁니다.
-    saveData(CART_KEY, []);
-    saveData(SYNC.cart.dirtyKey, false);
-    done(res.data);
-  }, function () {
-    done(null, NETWORK_ERROR.text);
-  });
+    finished = true;
+    clearTimeout(timer);
+    done(orderNo, errorText);
+  }
+
+  var timer = setTimeout(function () {
+    finish(null, "응답이 늦어지고 있습니다. 잠시 후 주문하기를 다시 눌러 주세요.\n(다시 눌러도 같은 주문이 두 번 들어가지 않습니다.)");
+  }, ORDER_TIMEOUT);
+
+  try {
+    sb.rpc("place_order", {
+      items: orderableCart(),
+      ship_name: ship.name,
+      ship_phone: ship.phone,
+      ship_address: ship.address,
+      ship_memo: ship.memo,
+      order_request: ship.requestId
+    }).then(function (res) {
+      if (res.error) {
+        // place_order 가 알려준 이유(한국어)는 그대로, 그 밖의 오류는 한국어 안내로 바꿉니다.
+        finish(null, res.error.code === "P0001" ? res.error.message : "주문을 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+        return;
+      }
+      // Supabase 장바구니는 함수가 비웠으니 이 브라우저의 장바구니도 비웁니다.
+      saveData(CART_KEY, []);
+      saveData(SYNC.cart.dirtyKey, false);
+      finish(res.data);
+    }, function () {
+      finish(null, NETWORK_ERROR.text);
+    });
+  } catch (e) {
+    finish(null, "주문을 저장하지 못했습니다. 새로고침한 뒤 다시 시도해 주세요.");
+  }
 }
 
 /* 주문 번호로 주문 하나를 불러옵니다. (본인 주문만 볼 수 있습니다)

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>주문서 - 핑크홀릭</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=20261010-1532">
 
 <style>
   /* 이 페이지에서만 쓰는 디자인 */
@@ -163,10 +163,31 @@
   <div>&copy; 2026 PINKHOLIC</div>
 </footer>
 
-<script src="products.js"></script>
+<script src="products.js?v=20261010-1532"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
-<script src="supabase.js"></script>
+<script src="supabase.js?v=20261010-1532"></script>
 <script>
+  // 중복 방지 번호 : 이 주문서 화면에서 하나만 만들어, 다시 눌러도 같은 번호를 보냅니다.
+  // (응답이 늦어 주문하기를 두 번 눌러도 주문이 하나만 저장됩니다.)
+  var ORDER_REQUEST_ID = makeRequestId();
+
+  function makeRequestId() {
+    if (window.crypto && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    // randomUUID 가 없는 오래된 브라우저용
+    var bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    var hex = "";
+    for (var i = 0; i < 16; i++) {
+      hex += (bytes[i] + 0x100).toString(16).substring(1);
+    }
+    return hex.substring(0, 8) + "-" + hex.substring(8, 12) + "-" + hex.substring(12, 16) + "-" +
+           hex.substring(16, 20) + "-" + hex.substring(20);
+  }
+
   // 한 칸에 대해 "틀림" 표시를 켜고 끕니다.
   function mark(fieldId, isWrong) {
     var box = document.getElementById(fieldId);
@@ -332,21 +353,35 @@
     btn.disabled = true;
     btn.textContent = "주문하는 중...";
 
-    placeOrder({
-      name: name,
-      phone: phone,
-      address: address,
-      memo: memo
-    }, function (orderNo, errorText) {
-      if (!orderNo) {
-        btn.disabled = false;
-        btn.textContent = btnText;
-        alert(errorText);
-        return;
-      }
-      // 주문이 끝나면 주문 완료 화면으로 갑니다.
-      location.href = "order-done.html?no=" + encodeURIComponent(orderNo);
-    });
+    function failed(errorText) {
+      btn.disabled = false;
+      btn.textContent = btnText;
+      alert(errorText);
+    }
+
+    // 어떤 오류가 나도 버튼이 "주문하는 중..."에 멈춰 있지 않게 합니다.
+    if (typeof placeOrder !== "function") {
+      failed("화면이 최신 버전이 아닙니다. 새로고침(Ctrl+F5)한 뒤 다시 주문해 주세요.");
+      return;
+    }
+    try {
+      placeOrder({
+        name: name,
+        phone: phone,
+        address: address,
+        memo: memo,
+        requestId: ORDER_REQUEST_ID
+      }, function (orderNo, errorText) {
+        if (!orderNo) {
+          failed(errorText);
+          return;
+        }
+        // 주문이 끝나면 주문 완료 화면으로 갑니다.
+        location.href = "order-done.html?no=" + encodeURIComponent(orderNo);
+      });
+    } catch (e) {
+      failed("주문을 저장하지 못했습니다. 새로고침한 뒤 다시 시도해 주세요.");
+    }
   }
 
   window.onload = function () {

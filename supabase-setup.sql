@@ -259,6 +259,10 @@ alter table public.orders drop column if exists pay_method;
 alter table public.orders alter column status set default '주문 접수';
 update public.orders set status = '주문 접수' where status = '결제 대기';
 
+-- 같은 주문이 두 번 저장되지 않게 하는 번호
+-- (주문서 화면마다 하나씩 만들어 보냅니다. 응답이 늦어 다시 눌러도 같은 번호면 새로 저장하지 않습니다.)
+alter table public.orders add column if not exists request_id uuid unique;
+
 -- 주문한 상품 (주문할 때의 이름·가격을 그대로 남겨 둡니다)
 create table if not exists public.order_items (
   id         bigint generated always as identity primary key,
@@ -287,13 +291,16 @@ create policy "본인 주문 상품 보기" on public.order_items
 
 grant select on public.orders, public.order_items to authenticated;
 
--- 결제 수단을 받던 예전 주문 함수를 지웁니다.
+-- 예전 주문 함수들을 지웁니다. (결제 수단을 받던 것, 중복 방지 번호가 없던 것)
 drop function if exists public.place_order(jsonb, text, text, text, text, text);
+drop function if exists public.place_order(jsonb, text, text, text, text);
 
 -- 주문하기 : 주문을 저장하고 회원 장바구니를 비운 뒤 주문 번호를 돌려줍니다.
 -- items 모양 : [{"id": 상품번호, "count": 수량}, ...]
+-- order_request : 중복 방지 번호. 이미 저장된 번호면 새로 저장하지 않고 그 주문 번호를 돌려줍니다.
+--                 (보내지 않으면 중복 확인 없이 저장합니다.)
 create or replace function public.place_order(
-  items jsonb, ship_name text, ship_phone text, ship_address text, ship_memo text
+  items jsonb, ship_name text, ship_phone text, ship_address text, ship_memo text, order_request uuid default null
 )
 returns text
 language plpgsql
@@ -313,6 +320,15 @@ begin
   if uid is null then
     raise exception '로그인이 필요합니다.';
   end if;
+
+  -- 이미 저장된 주문이면 (응답이 늦어 다시 누른 경우) 그 주문 번호를 그대로 돌려줍니다.
+  if order_request is not null then
+    select o.order_no into new_no from public.orders o where o.request_id = order_request and o.user_id = uid;
+    if new_no is not null then
+      return new_no;
+    end if;
+  end if;
+
   if coalesce(trim(ship_name), '') = '' or coalesce(trim(ship_phone), '') = '' or coalesce(trim(ship_address), '') = '' then
     raise exception '배송지를 모두 입력해 주세요.';
   end if;
@@ -339,9 +355,9 @@ begin
   member_cut := floor(goods_sum * 3 / 100.0 / 10) * 10;          -- 회원 할인 3%, 10원 단위 버림
   fee := case when goods_sum >= 30000 then 0 else 3000 end;       -- 3만원 이상 무료배송
 
-  insert into public.orders (user_id, ship_name, ship_phone, ship_address, ship_memo,
+  insert into public.orders (user_id, request_id, ship_name, ship_phone, ship_address, ship_memo,
                              old_total, sale_discount, member_discount, ship_fee, pay_total, save_point)
-  values (uid, trim(ship_name), trim(ship_phone), trim(ship_address), coalesce(trim(ship_memo), ''),
+  values (uid, order_request, trim(ship_name), trim(ship_phone), trim(ship_address), coalesce(trim(ship_memo), ''),
           old_sum, old_sum - goods_sum, member_cut, fee, goods_sum - member_cut + fee,
           floor((goods_sum - member_cut) * 1 / 100.0 / 10) * 10)       -- 적립 1%, 10원 단위 버림
   returning id into new_id;
@@ -360,5 +376,5 @@ begin
 end;
 $$;
 
-revoke execute on function public.place_order(jsonb, text, text, text, text) from public, anon;
-grant execute on function public.place_order(jsonb, text, text, text, text) to authenticated;
+revoke execute on function public.place_order(jsonb, text, text, text, text, uuid) from public, anon;
+grant execute on function public.place_order(jsonb, text, text, text, text, uuid) to authenticated;
