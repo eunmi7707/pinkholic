@@ -67,8 +67,15 @@ function saveData(key, value) {
 }
 
 /* --- 찜하기 --- */
-function getWish()          { return loadData(WISH_KEY, []); }   // 찜한 상품 번호 목록
-function setWish(list)      { saveData(WISH_KEY, list); }
+/* 찜은 [상품번호, ...] 모양으로 저장합니다.
+   로그인한 회원은 Supabase 에도 함께 저장합니다. (supabase.js 의 saveToServer) */
+function getWish()          { return loadData(WISH_KEY, []); }
+function setWish(list) {
+  saveData(WISH_KEY, list);
+  if (typeof saveToServer === "function") {
+    saveToServer("wish", list);
+  }
+}
 function isWished(id) {
   var list = getWish();
   for (var i = 0; i < list.length; i++) {
@@ -93,12 +100,12 @@ function toggleWishId(id) {
 
 /* --- 장바구니 --- */
 /* 장바구니는 [{id: 상품번호, count: 수량}] 모양으로 저장합니다.
-   로그인한 회원은 Supabase 에도 함께 저장합니다. (supabase.js 의 saveCartToServer) */
+   로그인한 회원은 Supabase 에도 함께 저장합니다. (supabase.js 의 saveToServer) */
 function getCart()     { return loadData(CART_KEY, []); }
 function setCart(list) {
   saveData(CART_KEY, list);
-  if (typeof saveCartToServer === "function") {
-    saveCartToServer(list);
+  if (typeof saveToServer === "function") {
+    saveToServer("cart", list);
   }
 }
 

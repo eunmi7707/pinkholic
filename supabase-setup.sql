@@ -164,3 +164,65 @@ $$;
 
 revoke execute on function public.set_cart(jsonb) from public, anon;
 grant execute on function public.set_cart(jsonb) to authenticated;
+
+
+-- ============================================================
+-- 찜 표 (wishes)
+--
+-- 로그인한 회원이 하트를 누른 상품을 한 줄씩 저장합니다.
+-- 로그인하지 않은 손님의 찜은 브라우저에만 저장됩니다.
+-- ============================================================
+
+create table if not exists public.wishes (
+  user_id    uuid    not null default auth.uid() references auth.users(id) on delete cascade,
+  product_id integer not null references public.products(id) on delete cascade,
+  position   integer not null default 0,   -- 찜한 순서
+  created_at timestamptz not null default now(),
+  primary key (user_id, product_id)
+);
+
+-- 보안 : 회원은 자기 찜만 보고 고칠 수 있습니다.
+alter table public.wishes enable row level security;
+
+drop policy if exists "본인 찜 보기" on public.wishes;
+create policy "본인 찜 보기" on public.wishes
+  for select to authenticated using (auth.uid() = user_id);
+
+drop policy if exists "본인 찜 추가" on public.wishes;
+create policy "본인 찜 추가" on public.wishes
+  for insert to authenticated with check (auth.uid() = user_id);
+
+drop policy if exists "본인 찜 빼기" on public.wishes;
+create policy "본인 찜 빼기" on public.wishes
+  for delete to authenticated using (auth.uid() = user_id);
+
+grant select, insert, delete on public.wishes to authenticated;
+
+-- 찜 목록 전체를 한 번에 바꿉니다. (사이트에서 부릅니다)
+-- items 모양 : [상품번호, 상품번호, ...]
+create or replace function public.set_wish(items jsonb)
+returns void
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+begin
+  if auth.uid() is null then
+    raise exception '로그인이 필요합니다.';
+  end if;
+
+  delete from public.wishes where user_id = auth.uid();
+
+  insert into public.wishes (user_id, product_id, position)
+  select auth.uid(), id, min(n)::integer
+  from (
+    select (e #>> '{}')::integer as id, n
+    from jsonb_array_elements(items) with ordinality as t(e, n)
+  ) as list
+  where exists (select 1 from public.products p where p.id = list.id)
+  group by id;
+end;
+$$;
+
+revoke execute on function public.set_wish(jsonb) from public, anon;
+grant execute on function public.set_wish(jsonb) to authenticated;

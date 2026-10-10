@@ -98,10 +98,10 @@ function signUp(email, pw, name, phone, done) {
       return;
     }
     // 메일 인증 없이 바로 가입되는 설정이면 곧바로 로그인 상태가 됩니다.
-    // 로그인 전에 담아둔 장바구니도 회원 장바구니로 옮깁니다.
+    // 로그인 전에 담아둔 장바구니와 찜도 회원 것으로 옮깁니다.
     if (res.data.session) {
       setLoginUser(toLoginUser(user));
-      pullCart(true, function () {
+      pullAll(true, function () {
         done({ needConfirm: false });
       });
       return;
@@ -127,8 +127,8 @@ function signIn(email, pw, done) {
     var user = toLoginUser(res.data.user);
     setLoginUser(user);
 
-    // 로그인 전에 담아둔 상품을 회원 장바구니에 합친 뒤 끝냅니다.
-    pullCart(true, function () {
+    // 로그인 전에 담아둔 장바구니와 찜을 회원 것에 합친 뒤 끝냅니다.
+    pullAll(true, function () {
       done(user);
     });
   }, function () {
@@ -140,10 +140,9 @@ function signIn(email, pw, done) {
 function logout() {
   setLoginUser(null);
 
-  // 회원 장바구니는 Supabase 에 남아 있으므로, 이 브라우저에서는 비웁니다.
+  // 회원 장바구니와 찜은 Supabase 에 남아 있으므로, 이 브라우저에서는 비웁니다.
   // (같은 컴퓨터를 쓰는 다음 사람에게 보이지 않게 합니다.)
-  saveData(CART_KEY, []);
-  saveData(CART_DIRTY_KEY, false);
+  clearMemberData();
 
   function finish() {
     alert("로그아웃되었습니다.");
@@ -194,82 +193,143 @@ function loadProducts(done) {
   });
 }
 
-/* ===== 장바구니 (로그인한 회원은 Supabase 의 cart_items 표에 저장) =====
-   화면에서는 지금처럼 브라우저에 저장된 장바구니를 씁니다.
+/* ===== 장바구니와 찜 (로그인한 회원은 Supabase 에 저장) =====
+   화면에서는 지금처럼 브라우저에 저장된 장바구니와 찜을 씁니다.
    로그인한 회원이면 바뀔 때마다 Supabase 에도 저장하고,
-   화면을 열 때 Supabase 의 장바구니를 불러와 브라우저와 맞춥니다.
+   화면을 열 때 Supabase 에서 불러와 브라우저와 맞춥니다.
 
-   CART_DIRTY_KEY : Supabase 에 아직 저장되지 않은 변경이 있는지.
+   dirtyKey : Supabase 에 아직 저장되지 않은 변경이 있는지.
    (담자마자 다른 화면으로 넘어가 저장이 끊긴 경우, 다음 화면에서 마저 저장합니다.) */
-var CART_DIRTY_KEY = "pinkholic_cart_dirty";
+var SYNC = {
+  // 장바구니 : [{id: 상품번호, count: 수량}]
+  cart: {
+    key: CART_KEY,
+    dirtyKey: "pinkholic_cart_dirty",
+    table: "cart_items",
+    columns: "product_id, count",
+    save: "set_cart",
+    fromRows: function (rows) {
+      var list = [];
+      for (var i = 0; i < rows.length; i++) {
+        list.push({ id: rows[i].product_id, count: rows[i].count });
+      }
+      return list;
+    },
+    // 같은 상품이 양쪽에 있으면 수량이 많은 쪽을 남깁니다.
+    merge: function (first, second) {
+      var result = first.slice();
+      for (var i = 0; i < second.length; i++) {
+        var found = false;
+        for (var j = 0; j < result.length; j++) {
+          if (result[j].id === second[i].id) {
+            result[j] = { id: result[j].id, count: Math.max(result[j].count, second[i].count) };
+            found = true;
+          }
+        }
+        if (!found) {
+          result.push(second[i]);
+        }
+      }
+      return result;
+    }
+  },
 
-/* products.js 의 setCart 가 장바구니를 바꿀 때마다 부릅니다. */
-function saveCartToServer(list) {
+  // 찜 : [상품번호, 상품번호, ...]
+  wish: {
+    key: WISH_KEY,
+    dirtyKey: "pinkholic_wish_dirty",
+    table: "wishes",
+    columns: "product_id",
+    save: "set_wish",
+    fromRows: function (rows) {
+      var list = [];
+      for (var i = 0; i < rows.length; i++) {
+        list.push(rows[i].product_id);
+      }
+      return list;
+    },
+    // 양쪽에 찜한 상품을 모두 남깁니다.
+    merge: function (first, second) {
+      var result = first.slice();
+      for (var i = 0; i < second.length; i++) {
+        if (result.indexOf(second[i]) === -1) {
+          result.push(second[i]);
+        }
+      }
+      return result;
+    }
+  }
+};
+
+/* 저장 요청은 한 번에 하나씩만 보냅니다.
+   (빠르게 여러 번 누르면 요청이 뒤바뀌어 도착해 예전 상태가 남을 수 있기 때문입니다.)
+   보내는 중에 또 바뀌면, 끝난 뒤 마지막 상태를 한 번 더 보냅니다. */
+var saving = {};    // 지금 보내는 중인지
+var waiting = {};   // 보내는 동안 또 바뀌었는지
+
+/* products.js 의 setCart / setWish 가 바뀔 때마다 부릅니다. kind 는 "cart" 또는 "wish" */
+function saveToServer(kind, list) {
   if (!sb || !getLoginUser()) {
     return;
   }
-  saveData(CART_DIRTY_KEY, true);
-  sb.rpc("set_cart", { items: list }).then(function (res) {
-    if (!res.error) {
-      saveData(CART_DIRTY_KEY, false);
+  var s = SYNC[kind];
+  saveData(s.dirtyKey, true);
+
+  if (saving[kind]) {
+    waiting[kind] = true;
+    return;
+  }
+  saving[kind] = true;
+
+  function next(saved) {
+    saving[kind] = false;
+    if (waiting[kind]) {
+      waiting[kind] = false;
+      saveToServer(kind, loadData(s.key, []));
+    } else if (saved) {
+      saveData(s.dirtyKey, false);
     }
+    // 저장하지 못했으면 dirty 로 남겨 두어 다음에 화면을 열 때 다시 저장합니다.
+  }
+
+  sb.rpc(s.save, { items: list }).then(function (res) {
+    next(!res.error);
   }, function () {
-    // 인터넷이 끊겼으면 다음에 화면을 열 때 다시 저장합니다.
+    next(false);
   });
 }
 
-/* 두 장바구니를 합칩니다. 같은 상품이 양쪽에 있으면 수량이 많은 쪽을 남깁니다. */
-function mergeCarts(first, second) {
-  var result = first.slice();
-  for (var i = 0; i < second.length; i++) {
-    var found = false;
-    for (var j = 0; j < result.length; j++) {
-      if (result[j].id === second[i].id) {
-        result[j] = { id: result[j].id, count: Math.max(result[j].count, second[i].count) };
-        found = true;
-      }
-    }
-    if (!found) {
-      result.push(second[i]);
-    }
-  }
-  return result;
-}
-
-/* Supabase 의 장바구니를 불러와 브라우저 장바구니와 맞춥니다.
-   merge 가 true 이면 (로그인할 때) 브라우저에 담긴 상품을 회원 장바구니에 합칩니다.
+/* Supabase 에서 불러와 브라우저와 맞춥니다.
+   merge 가 true 이면 (로그인할 때) 브라우저에 있던 것을 회원 것에 합칩니다.
    끝나면 done(바뀌었는지) 를 부릅니다. */
-function pullCart(merge, done) {
-  var local = getCart();
+function pullFromServer(kind, merge, done) {
+  var s = SYNC[kind];
+  var local = loadData(s.key, []);
 
   // 저장이 끊긴 변경이 있으면 브라우저 쪽이 최신이므로 Supabase 에 마저 저장합니다.
-  if (!merge && loadData(CART_DIRTY_KEY, false)) {
-    saveCartToServer(local);
+  if (!merge && loadData(s.dirtyKey, false)) {
+    saveToServer(kind, local);
     done(false);
     return;
   }
 
-  sb.from("cart_items").select("product_id, count").order("position").then(function (res) {
+  sb.from(s.table).select(s.columns).order("position").then(function (res) {
     if (res.error || !res.data) {
       done(false);
       return;
     }
 
-    var server = [];
-    for (var i = 0; i < res.data.length; i++) {
-      server.push({ id: res.data[i].product_id, count: res.data[i].count });
-    }
-
-    var result = merge ? mergeCarts(server, local) : server;
+    var server = s.fromRows(res.data);
+    var result = merge ? s.merge(server, local) : server;
     var changed = JSON.stringify(result) !== JSON.stringify(local);
 
-    saveData(CART_KEY, result);
-    // 합쳤으면 합친 장바구니를 Supabase 에 저장한 뒤 끝냅니다.
+    saveData(s.key, result);
+    // 합쳤으면 합친 것을 Supabase 에 저장한 뒤 끝냅니다.
     if (merge && JSON.stringify(result) !== JSON.stringify(server)) {
-      saveData(CART_DIRTY_KEY, true);
-      sb.rpc("set_cart", { items: result }).then(function (r) {
+      saveData(s.dirtyKey, true);
+      sb.rpc(s.save, { items: result }).then(function (r) {
         if (!r.error) {
-          saveData(CART_DIRTY_KEY, false);
+          saveData(s.dirtyKey, false);
         }
         done(changed);
       }, function () {
@@ -283,8 +343,25 @@ function pullCart(merge, done) {
   });
 }
 
-/* 화면을 열 때 Supabase의 로그인 상태와 장바구니를 맞춥니다.
-   (다른 곳에서 로그아웃했거나, 다른 기기에서 장바구니를 바꾼 경우를 반영합니다.) */
+/* 장바구니와 찜을 모두 맞춘 뒤 done(하나라도 바뀌었는지) 를 부릅니다. */
+function pullAll(merge, done) {
+  pullFromServer("cart", merge, function (cartChanged) {
+    pullFromServer("wish", merge, function (wishChanged) {
+      done(cartChanged || wishChanged);
+    });
+  });
+}
+
+/* 이 브라우저에 남은 회원 장바구니와 찜을 비웁니다. */
+function clearMemberData() {
+  for (var kind in SYNC) {
+    saveData(SYNC[kind].key, []);
+    saveData(SYNC[kind].dirtyKey, false);
+  }
+}
+
+/* 화면을 열 때 Supabase의 로그인 상태와 장바구니·찜을 맞춥니다.
+   (다른 곳에서 로그아웃했거나, 다른 기기에서 바꾼 경우를 반영합니다.) */
 function syncLogin() {
   if (!sb) {
     return;
@@ -297,10 +374,9 @@ function syncLogin() {
 
     setLoginUser(now);
 
-    // 로그인이 풀렸으면 회원 장바구니를 이 브라우저에서 비웁니다.
+    // 로그인이 풀렸으면 회원 장바구니와 찜을 이 브라우저에서 비웁니다.
     if (saved && !now) {
-      saveData(CART_KEY, []);
-      saveData(CART_DIRTY_KEY, false);
+      clearMemberData();
     }
 
     // 로그인 여부가 바뀌었으면 화면을 새로 그립니다.
@@ -309,9 +385,9 @@ function syncLogin() {
       return;
     }
 
-    // 로그인한 회원이면 Supabase 장바구니를 불러오고, 달라졌으면 화면을 새로 그립니다.
+    // 로그인한 회원이면 Supabase 에서 불러오고, 달라졌으면 화면을 새로 그립니다.
     if (now) {
-      pullCart(false, function (changed) {
+      pullAll(false, function (changed) {
         if (changed) {
           location.reload();
         }
