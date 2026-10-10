@@ -242,10 +242,10 @@
         '</div>';
     }
 
-    // 장바구니가 비었을 때
+    // 장바구니가 비었으면 주문서를 보여주지 않습니다.
     if (itemCount === 0) {
       box.innerHTML =
-        '<div class="empty">주문할 상품이 없습니다.<br>장바구니에 상품을 담아주세요.' +
+        '<div class="empty">장바구니가 비어 있어 주문할 수 없습니다.<br>상품을 먼저 담아주세요.' +
         '<br><a href="index.html">상품 보러 가기</a></div>';
       return;
     }
@@ -346,6 +346,13 @@
 
   // 결제하기 : 입력한 내용을 확인합니다.
   function pay() {
+    // 주문서를 연 뒤 다른 창에서 장바구니를 비웠을 수 있으니 한 번 더 확인합니다.
+    if (orderableCart().length === 0) {
+      alert("장바구니가 비어 있어 주문할 수 없습니다.\n상품을 먼저 담아주세요.");
+      drawOrder();
+      return;
+    }
+
     var name = document.getElementById("shipName").value.trim();
     var phone = document.getElementById("shipPhone").value.trim();
     var address = document.getElementById("shipAddress").value.trim();

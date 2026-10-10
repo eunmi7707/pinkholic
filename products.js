@@ -135,6 +135,19 @@ function cartTotalCount() {
   return total;
 }
 
+/* 장바구니에서 지금 판매 중인 상품만 골라 돌려줍니다.
+   (판매가 끝나 목록에서 사라진 상품은 주문할 수 없으므로 뺍니다) */
+function orderableCart() {
+  var cart = getCart();
+  var list = [];
+  for (var i = 0; i < cart.length; i++) {
+    if (findProduct(cart[i].id)) {
+      list.push(cart[i]);
+    }
+  }
+  return list;
+}
+
 /* --- 결제 금액 (장바구니와 주문서가 함께 씁니다) --- */
 var FREE_SHIP   = 30000;   // 이 금액 이상이면 배송비 무료
 var SHIP_FEE    = 3000;    // 배송비
