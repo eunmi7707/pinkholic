@@ -247,6 +247,32 @@ var PRODUCTS = [
     points: ["가로 26 x 세로 28 x 폭 11 cm", "소가죽 (크로커다일 엠보싱)", "어깨끈·손잡이 두 가지"]
   },
   {
+    id: 20,
+    name: "네이비 미니 탑핸들백",
+    category: "가방",
+    oldPrice: 128000,
+    price: 103600,
+    img: "https://images.unsplash.com/photo-1560891958-68bb1fe7fb78?w=900",
+    badge: "",
+    big: false,
+    hideOnAll: true,
+    desc: "손잡이를 위에 단 작은 네이비 가방입니다. 덮개가 있어 안이 들여다보이지 않고, 오돌토돌한 가죽이라 긁힘이 잘 보이지 않습니다. 손에 들거나 끈을 달아 어깨에 메실 수 있습니다.",
+    points: ["가로 20 x 세로 17 x 폭 9 cm", "소가죽 (엠보싱) / 무게 450g", "탈착식 어깨끈 포함"]
+  },
+  {
+    id: 21,
+    name: "핑크 체인 숄더백",
+    category: "가방",
+    oldPrice: 118000,
+    price: 95500,
+    img: "https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?w=900",
+    badge: "",
+    big: false,
+    hideOnAll: true,
+    desc: "연분홍 바탕에 노란 줄을 사선으로 넣은 체인 숄더백입니다. 각이 반듯하게 잡혀 있어 단정하고, 체인을 길게 내려 크로스로 메거나 두 겹으로 짧게 메실 수 있습니다.",
+    points: ["가로 22 x 세로 14 x 폭 7 cm", "소가죽 / 무게 410g", "실버 체인 스트랩"]
+  },
+  {
     id: 12,
     name: "핑크 진주 목걸이 세트",
     category: "주얼리",
