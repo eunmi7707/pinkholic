@@ -504,6 +504,84 @@ nav a.me {            /* 로그인한 회원 이름 */
   .bottom-space { height: 40px; }
 }
 
+/* ===== 결제 금액 상자 (장바구니 / 주문서) ===== */
+.total-box {
+  background-color: white;
+  border: 1px solid #ecd9e0;
+  border-radius: 4px;
+  padding: 26px 24px;
+  margin-top: 26px;
+}
+.total-line {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 0;
+  color: #6b5560;
+}
+.total-line.final {
+  border-top: 1px solid #f0e2e8;
+  margin-top: 12px;
+  padding-top: 18px;
+  font-size: 19px;
+  color: #3f2c33;
+}
+.total-line.final b {
+  color: #b9557a;
+  font-size: 26px;
+}
+/* 할인 금액은 분홍색으로 */
+.total-line.minus span:last-child {
+  color: #b9557a;
+}
+.total-line .hint {
+  font-size: 13px;
+  color: #a1909a;
+}
+/* 적립 예정 금액 */
+.total-line.save {
+  font-size: 14px;
+  color: #a1909a;
+  padding-top: 10px;
+}
+.total-line.save span:last-child {
+  color: #8d4260;
+}
+.order-row {
+  text-align: center;
+  margin-top: 26px;
+}
+.order-row .main-btn {
+  width: 100%;
+  max-width: 420px;
+}
+@media (max-width: 620px) {
+  .total-box {
+    padding: 20px 18px;
+    margin-top: 18px;
+  }
+  .total-line {
+    font-size: 15px;
+  }
+  .total-line.final {
+    font-size: 17px;
+  }
+  .total-line.final b {
+    font-size: 22px;
+  }
+
+  /* 주문 버튼을 화면 아래에 붙여둡니다 */
+  .order-row {
+    position: sticky;
+    bottom: 0;
+    background-color: #faf4f6;
+    padding: 12px 0;
+    margin-top: 18px;
+  }
+  .order-row .main-btn {
+    padding: 16px 10px;
+  }
+}
+
 /* ===== 맨 아래 (연락처) ===== */
 footer {
   background-color: #3f2c33;

@@ -87,57 +87,6 @@
     padding: 0 4px;
   }
 
-  /* 결제 금액 */
-  .total-box {
-    background-color: white;
-    border: 1px solid #ecd9e0;
-    border-radius: 4px;
-    padding: 26px 24px;
-    margin-top: 26px;
-  }
-  .total-line {
-    display: flex;
-    justify-content: space-between;
-    padding: 7px 0;
-    color: #6b5560;
-  }
-  .total-line.final {
-    border-top: 1px solid #f0e2e8;
-    margin-top: 12px;
-    padding-top: 18px;
-    font-size: 19px;
-    color: #3f2c33;
-  }
-  .total-line.final b {
-    color: #b9557a;
-    font-size: 26px;
-  }
-  /* 할인 금액은 분홍색으로 */
-  .total-line.minus span:last-child {
-    color: #b9557a;
-  }
-  .total-line .hint {
-    font-size: 13px;
-    color: #a1909a;
-  }
-  /* 적립 예정 금액 */
-  .total-line.save {
-    font-size: 14px;
-    color: #a1909a;
-    padding-top: 10px;
-  }
-  .total-line.save span:last-child {
-    color: #8d4260;
-  }
-  .order-row {
-    text-align: center;
-    margin-top: 26px;
-  }
-  .order-row .main-btn {
-    width: 100%;
-    max-width: 420px;
-  }
-
   /* ===== 휴대폰 화면 ===== */
   @media (max-width: 620px) {
     .cart-box {
@@ -186,32 +135,6 @@
       margin-left: auto;
       font-size: 17px;
     }
-
-    .total-box {
-      padding: 20px 18px;
-      margin-top: 18px;
-    }
-    .total-line {
-      font-size: 15px;
-    }
-    .total-line.final {
-      font-size: 17px;
-    }
-    .total-line.final b {
-      font-size: 22px;
-    }
-
-    /* 주문 버튼을 화면 아래에 붙여둡니다 */
-    .order-row {
-      position: sticky;
-      bottom: 0;
-      background-color: #faf4f6;
-      padding: 12px 0;
-      margin-top: 18px;
-    }
-    .order-row .main-btn {
-      padding: 16px 10px;
-    }
   }
 </style>
 </head>
@@ -254,22 +177,11 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
 <script src="supabase.js"></script>
 <script>
-  var FREE_SHIP = 30000;   // 이 금액 이상이면 배송비 무료
-  var SHIP_FEE  = 3000;    // 배송비
-  var MEMBER_SALE = 3;     // 회원 할인 (%) - 로그인했을 때만
-  var SAVE_RATE   = 1;     // 적립금 (%) - 로그인했을 때만
-
-  // 10원 단위 아래는 버립니다.
-  function cut10(number) {
-    return Math.floor(number / 10) * 10;
-  }
-
   // 장바구니를 화면에 그립니다.
+  // (배송비·할인·적립 계산은 products.js 의 calcTotals 가 합니다)
   function drawCart() {
     var cart = getCart();
     var box = document.getElementById("cartBox");
-    var goodsTotal = 0;   // 판매 가격 합계
-    var oldTotal = 0;     // 할인 전 가격 합계
 
     // 비어 있을 때
     if (cart.length === 0) {
@@ -289,8 +201,6 @@
       }
 
       var lineSum = item.price * cart[i].count;
-      goodsTotal += lineSum;
-      oldTotal += item.oldPrice * cart[i].count;
 
       html +=
         '<div class="cart-item">' +
@@ -311,37 +221,10 @@
         '</div>';
     }
 
-    // 배송비 계산
-    var shipFee = (goodsTotal >= FREE_SHIP) ? 0 : SHIP_FEE;
-    var shipText = (shipFee === 0) ? "무료" : won(shipFee);
-
-    // 할인 · 적립 계산
-    var saleDiscount = oldTotal - goodsTotal;   // 기획전 할인
-    var memberDiscount = cut10(goodsTotal * MEMBER_SALE / 100);
+    // 결제 금액
     var isMember = getLoginUser() ? true : false;
-
-    var memberLine;
-    var payGoods;
-    var saveText;
-    if (isMember) {
-      payGoods = goodsTotal - memberDiscount;
-      memberLine = '<div class="total-line minus"><span>회원 할인 (' + MEMBER_SALE + '%)</span><span>-' + won(memberDiscount) + '</span></div>';
-      saveText = won(cut10(payGoods * SAVE_RATE / 100));
-    } else {
-      payGoods = goodsTotal;
-      memberLine = '<div class="total-line"><span>회원 할인 (' + MEMBER_SALE + '%)</span><span class="hint">로그인 시 -' + won(memberDiscount) + '</span></div>';
-      saveText = '로그인 시 ' + won(cut10(goodsTotal * SAVE_RATE / 100));
-    }
-
     html +=
-      '<div class="total-box">' +
-        '<div class="total-line"><span>상품 금액</span><span>' + won(oldTotal) + '</span></div>' +
-        '<div class="total-line minus"><span>기획전 할인</span><span>-' + won(saleDiscount) + '</span></div>' +
-        memberLine +
-        '<div class="total-line"><span>배송비 (3만원 이상 무료)</span><span>' + shipText + '</span></div>' +
-        '<div class="total-line final"><span>결제 예정 금액</span><b>' + won(payGoods + shipFee) + '</b></div>' +
-        '<div class="total-line save"><span>적립 예정 (' + SAVE_RATE + '%)</span><span>' + saveText + '</span></div>' +
-      '</div>' +
+      totalBoxHtml(calcTotals(cart, isMember), isMember, "결제 예정 금액") +
       '<div class="order-row">' +
         '<button class="main-btn" onclick="order()">주문하기</button>' +
       '</div>';
@@ -385,18 +268,16 @@
     drawCart();
   }
 
-  // 주문하기 (연습용이라 실제 결제는 되지 않습니다)
+  // 주문하기 : 주문서 화면으로 갑니다. 로그인 전이면 로그인 후 주문서로 돌아옵니다.
   function order() {
-    var user = getLoginUser();
-
-    if (!user) {
+    if (!getLoginUser()) {
       if (confirm("주문하시려면 로그인이 필요합니다.\n로그인 화면으로 이동할까요?")) {
-        location.href = "login.html";
+        location.href = "login.html?next=order.html";
       }
       return;
     }
 
-    alert("연습용 페이지라 실제 결제는 되지 않습니다.\n실제 주문을 받으려면 결제 서비스 연결이 필요합니다.");
+    location.href = "order.html";
   }
 
   window.onload = function () {

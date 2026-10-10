@@ -135,6 +135,68 @@ function cartTotalCount() {
   return total;
 }
 
+/* --- 결제 금액 (장바구니와 주문서가 함께 씁니다) --- */
+var FREE_SHIP   = 30000;   // 이 금액 이상이면 배송비 무료
+var SHIP_FEE    = 3000;    // 배송비
+var MEMBER_SALE = 3;       // 회원 할인 (%) - 로그인했을 때만
+var SAVE_RATE   = 1;       // 적립금 (%) - 로그인했을 때만
+
+/* 10원 단위 아래는 버립니다. */
+function cut10(number) {
+  return Math.floor(number / 10) * 10;
+}
+
+/* 장바구니로 결제 금액을 계산합니다. (목록에서 사라진 상품은 뺍니다) */
+function calcTotals(cart, isMember) {
+  var oldTotal = 0;     // 할인 전 가격 합계
+  var goodsTotal = 0;   // 판매 가격 합계
+
+  for (var i = 0; i < cart.length; i++) {
+    var item = findProduct(cart[i].id);
+    if (!item) {
+      continue;
+    }
+    oldTotal += item.oldPrice * cart[i].count;
+    goodsTotal += item.price * cart[i].count;
+  }
+
+  var memberDiscount = cut10(goodsTotal * MEMBER_SALE / 100);
+  var payGoods = isMember ? goodsTotal - memberDiscount : goodsTotal;
+  var shipFee = (goodsTotal >= FREE_SHIP) ? 0 : SHIP_FEE;
+
+  return {
+    oldTotal: oldTotal,
+    goodsTotal: goodsTotal,
+    saleDiscount: oldTotal - goodsTotal,   // 기획전 할인
+    memberDiscount: memberDiscount,        // 회원 할인 (로그인 전에는 안내만)
+    shipFee: shipFee,
+    pay: payGoods + shipFee,               // 결제할 금액
+    save: cut10(payGoods * SAVE_RATE / 100)   // 적립 예정 금액
+  };
+}
+
+/* 결제 금액 상자를 만듭니다. finalLabel 은 마지막 줄 이름입니다. */
+function totalBoxHtml(t, isMember, finalLabel) {
+  var memberLine;
+  var saveText;
+  if (isMember) {
+    memberLine = '<div class="total-line minus"><span>회원 할인 (' + MEMBER_SALE + '%)</span><span>-' + won(t.memberDiscount) + '</span></div>';
+    saveText = won(t.save);
+  } else {
+    memberLine = '<div class="total-line"><span>회원 할인 (' + MEMBER_SALE + '%)</span><span class="hint">로그인 시 -' + won(t.memberDiscount) + '</span></div>';
+    saveText = '로그인 시 ' + won(t.save);
+  }
+
+  return '<div class="total-box">' +
+      '<div class="total-line"><span>상품 금액</span><span>' + won(t.oldTotal) + '</span></div>' +
+      '<div class="total-line minus"><span>기획전 할인</span><span>-' + won(t.saleDiscount) + '</span></div>' +
+      memberLine +
+      '<div class="total-line"><span>배송비 (3만원 이상 무료)</span><span>' + (t.shipFee === 0 ? "무료" : won(t.shipFee)) + '</span></div>' +
+      '<div class="total-line final"><span>' + finalLabel + '</span><b>' + won(t.pay) + '</b></div>' +
+      '<div class="total-line save"><span>적립 예정 (' + SAVE_RATE + '%)</span><span>' + saveText + '</span></div>' +
+    '</div>';
+}
+
 /* --- 로그인 --- */
 /* 지금 로그인한 회원을 기억해 둡니다. ({email, name, phone, joinedAt})
    가입·로그인·로그아웃은 supabase.js 가 맡습니다.                     */
