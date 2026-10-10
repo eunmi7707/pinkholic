@@ -370,7 +370,15 @@
 
   window.onload = function () {
     updateNav();
-    drawDetail();
+
+    // Supabase 에서 상품을 불러온 뒤에 화면을 그립니다.
+    loadProducts(function (ok) {
+      if (ok) {
+        drawDetail();
+      } else {
+        showLoadError(document.getElementById("detailBox"));
+      }
+    });
   };
 </script>
 

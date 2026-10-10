@@ -290,8 +290,17 @@
   window.onload = function () {
     updateNav();
     drawMember();
-    drawWish();
     document.getElementById("cartValue").textContent = cartTotalCount();
+    document.getElementById("wishCount").textContent = getWish().length;
+
+    // 찜한 상품 카드는 Supabase 에서 상품을 불러온 뒤에 그립니다.
+    loadProducts(function (ok) {
+      if (ok) {
+        drawWish();
+      } else {
+        showLoadError(document.getElementById("wishList"));
+      }
+    });
   };
 </script>
 

@@ -399,7 +399,17 @@
   // 페이지를 열면 상품을 그립니다.
   window.onload = function () {
     updateNav();
-    applyFilter();
+
+    // Supabase 에서 상품을 불러온 뒤에 화면을 그립니다.
+    var box = document.getElementById("productList");
+    box.innerHTML = '<div class="empty">상품을 불러오는 중입니다...</div>';
+    loadProducts(function (ok) {
+      if (ok) {
+        applyFilter();
+      } else {
+        showLoadError(box);
+      }
+    });
   };
 </script>
 

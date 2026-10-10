@@ -401,7 +401,15 @@
 
   window.onload = function () {
     updateNav();
-    drawCart();
+
+    // Supabase 에서 상품을 불러온 뒤에 화면을 그립니다.
+    loadProducts(function (ok) {
+      if (ok) {
+        drawCart();
+      } else {
+        showLoadError(document.getElementById("cartBox"));
+      }
+    });
   };
 </script>
 

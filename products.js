@@ -5,326 +5,37 @@
    2) 저장 기능 (찜하기 / 장바구니 / 로그인 상태)
    3) 공통으로 쓰는 작은 도구들
 
-   상품을 추가하거나 고치실 때는 아래 PRODUCTS 목록만 바꾸시면
+   상품은 Supabase 의 products 표에 저장되어 있습니다.
+   대시보드 Table Editor > products 에서 추가하거나 고치시면
    첫 화면, 상세 페이지, 장바구니에 모두 반영됩니다.
    ============================================================ */
 
 
 /* ===== 1) 상품 목록 ===== */
-/* id       : 상품 번호 (겹치지 않게)
+/* 화면을 열 때 Supabase 에서 불러와 아래 모양으로 채웁니다.
+   (괄호 안은 Supabase 표의 칸 이름입니다.)
+
+   id       : 상품 번호 (겹치지 않게)
    name     : 상품 이름
    category : 가방 / 주얼리 / 패션소품
-   oldPrice : 할인 전 가격 (숫자만)
-   price    : 판매 가격 (숫자만)
+   oldPrice : 할인 전 가격 (old_price)
+   price    : 판매 가격
    img      : 사진 주소
    badge    : 사진 위에 붙는 표시 (없으면 "")
-   big      : 첫 화면에서 크게 보여줄지 (true / false)
-   hideOnAll: 첫 화면 '전체'에서 숨길지 (true / false)
-   desc     : 상세 페이지에 나오는 설명
-   points   : 상세 페이지 아래 요약 3줄                        */
+   big      : 첫 화면에서 크게 보여줄지
+   hideOnAll: 첫 화면 '전체'에서 숨길지 (hide_on_all)
+   desc     : 상세 페이지에 나오는 설명 (description)
+   points   : 상세 페이지 아래 요약 3줄
+   보여주는 순서는 Supabase 의 sort_order 가 작은 것부터입니다.  */
 
-var PRODUCTS = [
-  {
-    id: 1,
-    name: "플리츠 레더 토트백",
-    category: "가방",
-    oldPrice: 168000,
-    price: 136000,
-    img: "https://images.unsplash.com/photo-1564422170194-896b89110ef8?w=900",
-    badge: "BEST 1",
-    big: true,
-    hideOnAll: false,
-    desc: "주름을 하나하나 잡아 만든 토트백입니다. 어깨에 걸치면 주름이 자연스럽게 퍼지고, 물건을 넣을수록 모양이 잡힙니다. 서류와 노트북이 함께 들어가는 크기라 출근용으로 많이 찾으십니다.",
-    points: ["가로 38 x 세로 28 x 폭 14 cm", "소가죽 / 무게 720g", "탈착식 파우치 포함"]
-  },
-  {
-    id: 2,
-    name: "골드 트위스트 이어링",
-    category: "주얼리",
-    oldPrice: 79000,
-    price: 63900,
-    img: "https://images.unsplash.com/photo-1617038220319-276d3cfab638?w=900",
-    badge: "BEST 2",
-    big: false,
-    hideOnAll: false,
-    desc: "꼬임을 넣은 후프 이어링입니다. 빛을 받는 각도마다 다르게 반짝여서, 단정한 옷차림에도 얼굴이 환해 보입니다. 귀에 부담이 적도록 속을 비워 가볍게 만들었습니다.",
-    points: ["지름 3.2 cm / 한 쪽 4g", "은침 / 알레르기 완화 도금", "보관용 파우치 동봉"]
-  },
-  {
-    id: 3,
-    name: "담수진주 펜던트 네크리스",
-    category: "주얼리",
-    oldPrice: 92000,
-    price: 74500,
-    img: "https://images.unsplash.com/photo-1611085583191-a3b181a88401?w=900",
-    badge: "BEST 3",
-    big: false,
-    hideOnAll: false,
-    desc: "담수진주 한 알을 매단 목걸이입니다. 진주는 하나하나 모양이 조금씩 달라, 같은 상품이라도 받으시는 것이 세상에 하나뿐입니다. 셔츠 위에 그대로 걸치기 좋은 길이입니다.",
-    points: ["체인 42 cm + 연장 5 cm", "담수진주 9~10 mm", "14K 골드필드 체인"]
-  },
-  /* 머플러 4개는 '패션소품'에서 한 줄로 모여 보이도록 붙여 둡니다. */
-  {
-    id: 7,
-    name: "베이지 체크 울 머플러",
-    category: "패션소품",
-    oldPrice: 98000,
-    price: 79300,
-    img: "https://images.unsplash.com/photo-1760551938129-01da7f950fe1?w=900",
-    badge: "",
-    big: false,
-    hideOnAll: false,
-    desc: "울을 섞어 짠 두꺼운 머플러입니다. 목에 두 번 감아도 부피가 답답하지 않고, 코트 위에 걸치면 어깨선이 정리됩니다. 베이지라 검정·회색 외투에 모두 어울립니다.",
-    points: ["가로 65 x 세로 190 cm (술 포함)", "울 70% / 아크릴 30%", "드라이클리닝 권장"]
-  },
-  {
-    id: 14,
-    name: "크림 루프 니트 머플러",
-    category: "패션소품",
-    oldPrice: 69000,
-    price: 55800,
-    img: "https://images.unsplash.com/photo-1577482636911-cbb53a3dc843?w=900",
-    badge: "",
-    big: false,
-    hideOnAll: true,
-    desc: "보송한 실로 짠 크림색 니트 머플러입니다. 목에 한 번만 둘러도 얼굴 아래가 포근하게 채워지고, 밝은 색이라 어두운 겨울 외투에 얼굴빛을 살려줍니다.",
-    points: ["가로 30 x 세로 180 cm", "울 50% / 아크릴 50%", "손세탁 또는 드라이클리닝"]
-  },
-  {
-    id: 15,
-    name: "데일리 니트 머플러 3종 세트",
-    category: "패션소품",
-    oldPrice: 89000,
-    price: 72000,
-    img: "https://images.unsplash.com/photo-1457545195570-67f207084966?w=900",
-    badge: "",
-    big: false,
-    hideOnAll: true,
-    desc: "그레이, 그린, 화이트 니트 머플러 세 개를 한 세트로 묶었습니다. 그날 옷 색에 맞춰 골라 두르시면 되고, 하나는 선물용으로 나누셔도 좋습니다.",
-    points: ["그레이 / 그린 / 화이트 (한 세트)", "울 30% / 아크릴 70%", "손세탁 가능"]
-  },
-  {
-    id: 16,
-    name: "블랙 패턴 롱 머플러",
-    category: "패션소품",
-    oldPrice: 78000,
-    price: 63100,
-    img: "https://images.unsplash.com/photo-1652371845177-057765101de2?w=900",
-    badge: "",
-    big: false,
-    hideOnAll: true,
-    desc: "검정 바탕에 회색 무늬를 넣은 얇고 긴 머플러입니다. 두껍지 않아 가을부터 초봄까지 쓰기 좋고, 길게 늘어뜨리면 단조로운 코트에 포인트가 됩니다.",
-    points: ["가로 70 x 세로 200 cm", "울 30% / 레이온 70%", "드라이클리닝 권장"]
-  },
-  {
-    id: 4,
-    name: "라운드 골드 선글라스",
-    category: "패션소품",
-    oldPrice: 145000,
-    price: 117400,
-    img: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=900",
-    badge: "",
-    big: false,
-    hideOnAll: false,
-    desc: "얇은 금속테의 동그란 선글라스입니다. 테가 가늘어 얼굴을 덮지 않고, 렌즈 색이 진하지 않아 실내에 들어가서도 바로 벗지 않아도 됩니다.",
-    points: ["렌즈 지름 4.9 cm / 무게 21g", "자외선 99% 차단", "전용 케이스와 안경닦이 포함"]
-  },
-  {
-    id: 5,
-    name: "젬스톤 링 세트 (3종)",
-    category: "주얼리",
-    oldPrice: 88000,
-    price: 71200,
-    img: "https://images.unsplash.com/photo-1608042314453-ae338d80c427?w=900",
-    badge: "",
-    big: false,
-    hideOnAll: false,
-    desc: "굵기가 다른 반지 세 개를 한 세트로 묶었습니다. 셋을 한 손에 겹쳐 끼거나, 하나만 골라 끼셔도 됩니다. 색이 있는 원석을 하나씩 물려 손이 심심해 보이지 않습니다.",
-    points: ["12호 / 13호 / 14호 (한 세트)", "황동에 골드 도금", "천연석 (색과 무늬가 조금씩 다릅니다)"]
-  },
-  {
-    id: 6,
-    name: "골드 뱅글 팔찌 세트",
-    category: "주얼리",
-    oldPrice: 76000,
-    price: 61500,
-    img: "https://images.unsplash.com/photo-1583292650898-7d22cd27ca6f?w=900",
-    badge: "",
-    big: false,
-    hideOnAll: false,
-    desc: "가느다란 뱅글 여러 개를 한 번에 착용하는 세트입니다. 팔을 움직일 때마다 서로 부딪히며 소리가 나고, 소매를 걷었을 때 손목이 예뻐 보입니다.",
-    points: ["안지름 6.2 cm (평균 손목)", "황동에 골드 도금", "4개 한 세트"]
-  },
-  {
-    id: 8,
-    name: "골드 집게핀 헤어 클립",
-    category: "패션소품",
-    oldPrice: 38000,
-    price: 30700,
-    img: "https://images.unsplash.com/photo-1744177762258-c98418b7a4eb?w=900",
-    badge: "",
-    big: false,
-    hideOnAll: false,
-    desc: "머리를 한 번에 올려 고정하는 집게핀입니다. 이가 촘촘해 잔머리까지 잡히고, 스프링이 단단해 오래 두어도 흘러내리지 않습니다.",
-    points: ["길이 10.5 cm", "황동에 골드 도금", "긴 머리·중간 길이 모두 사용 가능"]
-  },
-  {
-    id: 9,
-    name: "브라스 참 백 키링",
-    category: "패션소품",
-    oldPrice: 42000,
-    price: 34000,
-    img: "https://images.unsplash.com/photo-1678271248004-957a9d32197a?w=900",
-    badge: "",
-    big: false,
-    hideOnAll: false,
-    desc: "가방에 다는 황동 장식입니다. 무늬를 하나하나 새겨 넣어 두께감이 있고, 쓸수록 색이 깊어집니다. 열쇠고리로도 쓰실 수 있습니다.",
-    points: ["장식 길이 7 cm / 무게 34g", "황동 (사용할수록 색이 변합니다)", "고리 포함"]
-  },
-  {
-    id: 17,
-    name: "진주 헤어핀 2종 세트",
-    category: "패션소품",
-    oldPrice: 32000,
-    price: 25900,
-    img: "https://images.unsplash.com/photo-1564624791497-06ce5d1643ec?w=900",
-    badge: "",
-    big: false,
-    hideOnAll: true,
-    desc: "작은 진주를 촘촘히 박은 넓은 핀과, 진주를 한 줄로 이은 가는 핀을 한 세트로 묶었습니다. 앞머리를 넘겨 꽂기만 해도 얼굴 주변이 환해 보입니다.",
-    points: ["넓은 핀 7.5 cm / 가는 핀 6.5 cm", "인조진주 / 금속 골드 도금", "2개 한 세트"]
-  },
-  {
-    id: 18,
-    name: "레드 레더 드라이빙 장갑",
-    category: "패션소품",
-    oldPrice: 65000,
-    price: 52600,
-    img: "https://images.unsplash.com/photo-1642952180306-588f9eddce8e?w=900",
-    badge: "",
-    big: false,
-    hideOnAll: true,
-    desc: "손가락 끝을 터서 운전대나 휴대폰을 잡기 편한 가죽 장갑입니다. 손등에 구멍을 내어 답답하지 않고, 붉은 색이 어두운 외투 소매 끝에서 포인트가 됩니다.",
-    points: ["S / M (한 치수 선택)", "양가죽", "손목 똑딱단추 여밈"]
-  },
-  {
-    id: 19,
-    name: "레더 베레모",
-    category: "패션소품",
-    oldPrice: 72000,
-    price: 58300,
-    img: "https://images.unsplash.com/photo-1756197257107-2aab275e6828?w=900",
-    badge: "",
-    big: false,
-    hideOnAll: true,
-    desc: "검정 가죽으로 만든 베레모입니다. 비스듬히 얹기만 해도 차림이 정돈되어 보이고, 가죽이라 니트 베레보다 덜 캐주얼해 출근길에도 쓰기 좋습니다.",
-    points: ["머리둘레 56~58 cm", "인조가죽 / 안감 면", "모양이 잡히도록 접지 말고 보관"]
-  },
-  {
-    id: 10,
-    name: "소프트 레더 미니 숄더백",
-    category: "가방",
-    oldPrice: 138000,
-    price: 111700,
-    img: "https://images.unsplash.com/photo-1786872814428-1f0d8d685217?w=900",
-    badge: "",
-    big: false,
-    hideOnAll: true,
-    desc: "부드러운 가죽으로 만든 작은 숄더백입니다. 힘을 주지 않은 형태라 몸에 붙어 걸리적거리지 않습니다. 지갑과 휴대폰, 파우치 하나가 들어갑니다.",
-    points: ["가로 24 x 세로 16 x 폭 8 cm", "소가죽 / 무게 380g", "스트랩 길이 조절 가능"]
-  },
-  {
-    id: 11,
-    name: "크로커다일 패턴 숄더백",
-    category: "가방",
-    oldPrice: 152000,
-    price: 123100,
-    img: "https://images.unsplash.com/photo-1713425886143-6ea8c776bf2d?w=900",
-    badge: "",
-    big: false,
-    hideOnAll: true,
-    desc: "악어 무늬를 눌러 넣은 숄더백입니다. 무늬가 있어 단순한 형태인데도 밋밋해 보이지 않고, 각이 잡혀 있어 세워두어도 무너지지 않습니다.",
-    points: ["가로 26 x 세로 28 x 폭 11 cm", "소가죽 (크로커다일 엠보싱)", "어깨끈·손잡이 두 가지"]
-  },
-  {
-    id: 20,
-    name: "네이비 미니 탑핸들백",
-    category: "가방",
-    oldPrice: 128000,
-    price: 103600,
-    img: "https://images.unsplash.com/photo-1560891958-68bb1fe7fb78?w=900",
-    badge: "",
-    big: false,
-    hideOnAll: true,
-    desc: "손잡이를 위에 단 작은 네이비 가방입니다. 덮개가 있어 안이 들여다보이지 않고, 오돌토돌한 가죽이라 긁힘이 잘 보이지 않습니다. 손에 들거나 끈을 달아 어깨에 메실 수 있습니다.",
-    points: ["가로 20 x 세로 17 x 폭 9 cm", "소가죽 (엠보싱) / 무게 450g", "탈착식 어깨끈 포함"]
-  },
-  {
-    id: 21,
-    name: "핑크 체인 숄더백",
-    category: "가방",
-    oldPrice: 118000,
-    price: 95500,
-    img: "https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?w=900",
-    badge: "",
-    big: false,
-    hideOnAll: true,
-    desc: "연분홍 바탕에 노란 줄을 사선으로 넣은 체인 숄더백입니다. 각이 반듯하게 잡혀 있어 단정하고, 체인을 길게 내려 크로스로 메거나 두 겹으로 짧게 메실 수 있습니다.",
-    points: ["가로 22 x 세로 14 x 폭 7 cm", "소가죽 / 무게 410g", "실버 체인 스트랩"]
-  },
-  {
-    id: 12,
-    name: "핑크 진주 목걸이 세트",
-    category: "주얼리",
-    oldPrice: 118000,
-    price: 95500,
-    img: "https://images.unsplash.com/photo-1654699991494-892326ee8171?w=900",
-    badge: "",
-    big: false,
-    hideOnAll: true,
-    desc: "분홍빛이 도는 진주로 만든 목걸이와 귀걸이 세트입니다. 흰 진주보다 얼굴빛이 밝아 보여, 나이가 들수록 더 잘 어울립니다.",
-    points: ["목걸이 45 cm + 귀걸이 한 쌍", "담수진주 7~8 mm", "선물 상자 포장"]
-  },
-  {
-    id: 13,
-    name: "진주 스터드 귀걸이",
-    category: "주얼리",
-    oldPrice: 62000,
-    price: 50200,
-    img: "https://images.unsplash.com/photo-1623303179820-de8ec58b03dc?w=900",
-    badge: "",
-    big: false,
-    hideOnAll: true,
-    desc: "귀에 붙는 알 진주 귀걸이입니다. 매일 착용해도 부담이 없고, 어떤 옷에도 어울려 처음 사는 진주로 많이 고르십니다.",
-    points: ["진주 8 mm", "은침 (알레르기 완화)", "한 쌍"]
-  },
-  {
-    id: 22,
-    name: "골드 오벌 체인 팔찌",
-    category: "주얼리",
-    oldPrice: 69000,
-    price: 55800,
-    img: "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=900",
-    badge: "",
-    big: false,
-    hideOnAll: true,
-    desc: "동그스름한 고리를 굵직하게 이은 체인 팔찌입니다. 하나만 차도 손목이 허전하지 않고, 시계나 얇은 뱅글과 겹쳐 차기에도 좋습니다.",
-    points: ["길이 17 cm + 연장 3 cm", "황동에 골드 도금", "토글 잠금"]
-  },
-  {
-    id: 23,
-    name: "골드 스타 드롭 이어링",
-    category: "주얼리",
-    oldPrice: 48000,
-    price: 38800,
-    img: "https://images.unsplash.com/photo-1561172478-a203d9c8290e?w=900",
-    badge: "",
-    big: false,
-    hideOnAll: true,
-    desc: "가는 막대 끝에 금박 별을 매단 귀걸이입니다. 걸을 때마다 별이 흔들리며 반짝이고, 크기에 비해 가벼워 오래 하고 있어도 귀가 편합니다.",
-    points: ["전체 길이 6 cm / 한 쪽 3g", "아크릴 금박 / 고리 골드 도금", "한 쌍"]
-  }
-];
+var PRODUCTS = [];   // supabase.js 의 loadProducts() 가 채웁니다.
+
+/* 상품을 불러오지 못했을 때 box 안에 안내를 보여줍니다. */
+function showLoadError(box) {
+  box.innerHTML =
+    '<div class="empty">상품을 불러오지 못했습니다.<br>' +
+    '잠시 후 새로고침해 주세요.</div>';
+}
 
 
 /* ===== 2) 저장 기능 ===== */

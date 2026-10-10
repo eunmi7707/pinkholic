@@ -143,6 +143,43 @@ function logout() {
   }
 }
 
+/* 상품 목록을 Supabase 의 products 표에서 불러와 PRODUCTS 에 채웁니다.
+   다 불러오면 done(true), 불러오지 못하면 done(false) 를 부릅니다. */
+function loadProducts(done) {
+  if (!sb) {
+    done(false);
+    return;
+  }
+
+  sb.from("products").select("*").order("sort_order").then(function (res) {
+    if (res.error || !res.data) {
+      done(false);
+      return;
+    }
+
+    PRODUCTS = [];
+    for (var i = 0; i < res.data.length; i++) {
+      var row = res.data[i];
+      PRODUCTS.push({
+        id: row.id,
+        name: row.name,
+        category: row.category,
+        oldPrice: row.old_price,
+        price: row.price,
+        img: row.img,
+        badge: row.badge || "",
+        big: row.big,
+        hideOnAll: row.hide_on_all,
+        desc: row.description,
+        points: row.points || []
+      });
+    }
+    done(true);
+  }, function () {
+    done(false);
+  });
+}
+
 /* 화면을 열 때 Supabase의 로그인 상태와 맞춥니다.
    (다른 곳에서 로그아웃했거나 로그인이 만료된 경우를 반영합니다.) */
 function syncLogin() {
