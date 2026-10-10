@@ -297,6 +297,32 @@ var PRODUCTS = [
     hideOnAll: true,
     desc: "귀에 붙는 알 진주 귀걸이입니다. 매일 착용해도 부담이 없고, 어떤 옷에도 어울려 처음 사는 진주로 많이 고르십니다.",
     points: ["진주 8 mm", "은침 (알레르기 완화)", "한 쌍"]
+  },
+  {
+    id: 22,
+    name: "골드 오벌 체인 팔찌",
+    category: "주얼리",
+    oldPrice: 69000,
+    price: 55800,
+    img: "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=900",
+    badge: "",
+    big: false,
+    hideOnAll: true,
+    desc: "동그스름한 고리를 굵직하게 이은 체인 팔찌입니다. 하나만 차도 손목이 허전하지 않고, 시계나 얇은 뱅글과 겹쳐 차기에도 좋습니다.",
+    points: ["길이 17 cm + 연장 3 cm", "황동에 골드 도금", "토글 잠금"]
+  },
+  {
+    id: 23,
+    name: "골드 스타 드롭 이어링",
+    category: "주얼리",
+    oldPrice: 48000,
+    price: 38800,
+    img: "https://images.unsplash.com/photo-1561172478-a203d9c8290e?w=900",
+    badge: "",
+    big: false,
+    hideOnAll: true,
+    desc: "가는 막대 끝에 금박 별을 매단 귀걸이입니다. 걸을 때마다 별이 흔들리며 반짝이고, 크기에 비해 가벼워 오래 하고 있어도 귀가 편합니다.",
+    points: ["전체 길이 6 cm / 한 쪽 3g", "아크릴 금박 / 고리 골드 도금", "한 쌍"]
   }
 ];
 
