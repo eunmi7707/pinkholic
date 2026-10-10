@@ -112,6 +112,23 @@
     color: #b9557a;
     font-size: 26px;
   }
+  /* 할인 금액은 분홍색으로 */
+  .total-line.minus span:last-child {
+    color: #b9557a;
+  }
+  .total-line .hint {
+    font-size: 13px;
+    color: #a1909a;
+  }
+  /* 적립 예정 금액 */
+  .total-line.save {
+    font-size: 14px;
+    color: #a1909a;
+    padding-top: 10px;
+  }
+  .total-line.save span:last-child {
+    color: #8d4260;
+  }
   .order-row {
     text-align: center;
     margin-top: 26px;
@@ -237,12 +254,20 @@
 <script>
   var FREE_SHIP = 30000;   // 이 금액 이상이면 배송비 무료
   var SHIP_FEE  = 3000;    // 배송비
+  var MEMBER_SALE = 3;     // 회원 할인 (%) - 로그인했을 때만
+  var SAVE_RATE   = 1;     // 적립금 (%) - 로그인했을 때만
+
+  // 10원 단위 아래는 버립니다.
+  function cut10(number) {
+    return Math.floor(number / 10) * 10;
+  }
 
   // 장바구니를 화면에 그립니다.
   function drawCart() {
     var cart = getCart();
     var box = document.getElementById("cartBox");
-    var goodsTotal = 0;
+    var goodsTotal = 0;   // 판매 가격 합계
+    var oldTotal = 0;     // 할인 전 가격 합계
 
     // 비어 있을 때
     if (cart.length === 0) {
@@ -263,6 +288,7 @@
 
       var lineSum = item.price * cart[i].count;
       goodsTotal += lineSum;
+      oldTotal += item.oldPrice * cart[i].count;
 
       html +=
         '<div class="cart-item">' +
@@ -287,11 +313,32 @@
     var shipFee = (goodsTotal >= FREE_SHIP) ? 0 : SHIP_FEE;
     var shipText = (shipFee === 0) ? "무료" : won(shipFee);
 
+    // 할인 · 적립 계산
+    var saleDiscount = oldTotal - goodsTotal;   // 기획전 할인
+    var memberDiscount = cut10(goodsTotal * MEMBER_SALE / 100);
+    var isMember = getLoginUser() ? true : false;
+
+    var memberLine;
+    var payGoods;
+    var saveText;
+    if (isMember) {
+      payGoods = goodsTotal - memberDiscount;
+      memberLine = '<div class="total-line minus"><span>회원 할인 (' + MEMBER_SALE + '%)</span><span>-' + won(memberDiscount) + '</span></div>';
+      saveText = won(cut10(payGoods * SAVE_RATE / 100));
+    } else {
+      payGoods = goodsTotal;
+      memberLine = '<div class="total-line"><span>회원 할인 (' + MEMBER_SALE + '%)</span><span class="hint">로그인 시 -' + won(memberDiscount) + '</span></div>';
+      saveText = '로그인 시 ' + won(cut10(goodsTotal * SAVE_RATE / 100));
+    }
+
     html +=
       '<div class="total-box">' +
-        '<div class="total-line"><span>상품 금액</span><span>' + won(goodsTotal) + '</span></div>' +
+        '<div class="total-line"><span>상품 금액</span><span>' + won(oldTotal) + '</span></div>' +
+        '<div class="total-line minus"><span>기획전 할인</span><span>-' + won(saleDiscount) + '</span></div>' +
+        memberLine +
         '<div class="total-line"><span>배송비 (3만원 이상 무료)</span><span>' + shipText + '</span></div>' +
-        '<div class="total-line final"><span>결제 예정 금액</span><b>' + won(goodsTotal + shipFee) + '</b></div>' +
+        '<div class="total-line final"><span>결제 예정 금액</span><b>' + won(payGoods + shipFee) + '</b></div>' +
+        '<div class="total-line save"><span>적립 예정 (' + SAVE_RATE + '%)</span><span>' + saveText + '</span></div>' +
       '</div>' +
       '<div class="order-row">' +
         '<button class="main-btn" onclick="order()">주문하기</button>' +
