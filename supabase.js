@@ -98,10 +98,15 @@ function signUp(email, pw, name, phone, done) {
       return;
     }
     // 메일 인증 없이 바로 가입되는 설정이면 곧바로 로그인 상태가 됩니다.
+    // 로그인 전에 담아둔 장바구니도 회원 장바구니로 옮깁니다.
     if (res.data.session) {
       setLoginUser(toLoginUser(user));
+      pullCart(true, function () {
+        done({ needConfirm: false });
+      });
+      return;
     }
-    done({ needConfirm: !res.data.session });
+    done({ needConfirm: true });
   }, function () {
     done(null, NETWORK_ERROR.text, NETWORK_ERROR.field);
   });
@@ -121,7 +126,11 @@ function signIn(email, pw, done) {
     }
     var user = toLoginUser(res.data.user);
     setLoginUser(user);
-    done(user);
+
+    // 로그인 전에 담아둔 상품을 회원 장바구니에 합친 뒤 끝냅니다.
+    pullCart(true, function () {
+      done(user);
+    });
   }, function () {
     done(null, NETWORK_ERROR.text);
   });
@@ -130,6 +139,11 @@ function signIn(email, pw, done) {
 /* 로그아웃 */
 function logout() {
   setLoginUser(null);
+
+  // 회원 장바구니는 Supabase 에 남아 있으므로, 이 브라우저에서는 비웁니다.
+  // (같은 컴퓨터를 쓰는 다음 사람에게 보이지 않게 합니다.)
+  saveData(CART_KEY, []);
+  saveData(CART_DIRTY_KEY, false);
 
   function finish() {
     alert("로그아웃되었습니다.");
@@ -180,8 +194,97 @@ function loadProducts(done) {
   });
 }
 
-/* 화면을 열 때 Supabase의 로그인 상태와 맞춥니다.
-   (다른 곳에서 로그아웃했거나 로그인이 만료된 경우를 반영합니다.) */
+/* ===== 장바구니 (로그인한 회원은 Supabase 의 cart_items 표에 저장) =====
+   화면에서는 지금처럼 브라우저에 저장된 장바구니를 씁니다.
+   로그인한 회원이면 바뀔 때마다 Supabase 에도 저장하고,
+   화면을 열 때 Supabase 의 장바구니를 불러와 브라우저와 맞춥니다.
+
+   CART_DIRTY_KEY : Supabase 에 아직 저장되지 않은 변경이 있는지.
+   (담자마자 다른 화면으로 넘어가 저장이 끊긴 경우, 다음 화면에서 마저 저장합니다.) */
+var CART_DIRTY_KEY = "pinkholic_cart_dirty";
+
+/* products.js 의 setCart 가 장바구니를 바꿀 때마다 부릅니다. */
+function saveCartToServer(list) {
+  if (!sb || !getLoginUser()) {
+    return;
+  }
+  saveData(CART_DIRTY_KEY, true);
+  sb.rpc("set_cart", { items: list }).then(function (res) {
+    if (!res.error) {
+      saveData(CART_DIRTY_KEY, false);
+    }
+  }, function () {
+    // 인터넷이 끊겼으면 다음에 화면을 열 때 다시 저장합니다.
+  });
+}
+
+/* 두 장바구니를 합칩니다. 같은 상품이 양쪽에 있으면 수량이 많은 쪽을 남깁니다. */
+function mergeCarts(first, second) {
+  var result = first.slice();
+  for (var i = 0; i < second.length; i++) {
+    var found = false;
+    for (var j = 0; j < result.length; j++) {
+      if (result[j].id === second[i].id) {
+        result[j] = { id: result[j].id, count: Math.max(result[j].count, second[i].count) };
+        found = true;
+      }
+    }
+    if (!found) {
+      result.push(second[i]);
+    }
+  }
+  return result;
+}
+
+/* Supabase 의 장바구니를 불러와 브라우저 장바구니와 맞춥니다.
+   merge 가 true 이면 (로그인할 때) 브라우저에 담긴 상품을 회원 장바구니에 합칩니다.
+   끝나면 done(바뀌었는지) 를 부릅니다. */
+function pullCart(merge, done) {
+  var local = getCart();
+
+  // 저장이 끊긴 변경이 있으면 브라우저 쪽이 최신이므로 Supabase 에 마저 저장합니다.
+  if (!merge && loadData(CART_DIRTY_KEY, false)) {
+    saveCartToServer(local);
+    done(false);
+    return;
+  }
+
+  sb.from("cart_items").select("product_id, count").order("position").then(function (res) {
+    if (res.error || !res.data) {
+      done(false);
+      return;
+    }
+
+    var server = [];
+    for (var i = 0; i < res.data.length; i++) {
+      server.push({ id: res.data[i].product_id, count: res.data[i].count });
+    }
+
+    var result = merge ? mergeCarts(server, local) : server;
+    var changed = JSON.stringify(result) !== JSON.stringify(local);
+
+    saveData(CART_KEY, result);
+    // 합쳤으면 합친 장바구니를 Supabase 에 저장한 뒤 끝냅니다.
+    if (merge && JSON.stringify(result) !== JSON.stringify(server)) {
+      saveData(CART_DIRTY_KEY, true);
+      sb.rpc("set_cart", { items: result }).then(function (r) {
+        if (!r.error) {
+          saveData(CART_DIRTY_KEY, false);
+        }
+        done(changed);
+      }, function () {
+        done(changed);
+      });
+      return;
+    }
+    done(changed);
+  }, function () {
+    done(false);
+  });
+}
+
+/* 화면을 열 때 Supabase의 로그인 상태와 장바구니를 맞춥니다.
+   (다른 곳에서 로그아웃했거나, 다른 기기에서 장바구니를 바꾼 경우를 반영합니다.) */
 function syncLogin() {
   if (!sb) {
     return;
@@ -194,9 +297,25 @@ function syncLogin() {
 
     setLoginUser(now);
 
+    // 로그인이 풀렸으면 회원 장바구니를 이 브라우저에서 비웁니다.
+    if (saved && !now) {
+      saveData(CART_KEY, []);
+      saveData(CART_DIRTY_KEY, false);
+    }
+
     // 로그인 여부가 바뀌었으면 화면을 새로 그립니다.
     if ((saved ? true : false) !== (now ? true : false)) {
       location.reload();
+      return;
+    }
+
+    // 로그인한 회원이면 Supabase 장바구니를 불러오고, 달라졌으면 화면을 새로 그립니다.
+    if (now) {
+      pullCart(false, function (changed) {
+        if (changed) {
+          location.reload();
+        }
+      });
     }
   });
 }

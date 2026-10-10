@@ -92,9 +92,15 @@ function toggleWishId(id) {
 }
 
 /* --- 장바구니 --- */
-/* 장바구니는 [{id: 상품번호, count: 수량}] 모양으로 저장합니다. */
+/* 장바구니는 [{id: 상품번호, count: 수량}] 모양으로 저장합니다.
+   로그인한 회원은 Supabase 에도 함께 저장합니다. (supabase.js 의 saveCartToServer) */
 function getCart()     { return loadData(CART_KEY, []); }
-function setCart(list) { saveData(CART_KEY, list); }
+function setCart(list) {
+  saveData(CART_KEY, list);
+  if (typeof saveCartToServer === "function") {
+    saveCartToServer(list);
+  }
+}
 
 function addToCart(id, count) {
   var cart = getCart();

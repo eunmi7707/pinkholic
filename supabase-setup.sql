@@ -97,3 +97,70 @@ create policy "누구나 상품 보기" on public.products
   for select to anon, authenticated using (true);
 
 grant select on public.products to anon, authenticated;
+
+
+-- ============================================================
+-- 장바구니 표 (cart_items)
+--
+-- 로그인한 회원의 장바구니를 상품마다 한 줄씩 저장합니다.
+-- 로그인하지 않은 손님의 장바구니는 브라우저에만 저장됩니다.
+-- ============================================================
+
+create table if not exists public.cart_items (
+  user_id    uuid    not null default auth.uid() references auth.users(id) on delete cascade,
+  product_id integer not null references public.products(id) on delete cascade,
+  count      integer not null check (count between 1 and 99),
+  position   integer not null default 0,   -- 장바구니에 보여주는 순서
+  updated_at timestamptz not null default now(),
+  primary key (user_id, product_id)
+);
+
+-- 보안 : 회원은 자기 장바구니만 보고 고칠 수 있습니다.
+alter table public.cart_items enable row level security;
+
+drop policy if exists "본인 장바구니 보기" on public.cart_items;
+create policy "본인 장바구니 보기" on public.cart_items
+  for select to authenticated using (auth.uid() = user_id);
+
+drop policy if exists "본인 장바구니 담기" on public.cart_items;
+create policy "본인 장바구니 담기" on public.cart_items
+  for insert to authenticated with check (auth.uid() = user_id);
+
+drop policy if exists "본인 장바구니 수정" on public.cart_items;
+create policy "본인 장바구니 수정" on public.cart_items
+  for update to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+drop policy if exists "본인 장바구니 빼기" on public.cart_items;
+create policy "본인 장바구니 빼기" on public.cart_items
+  for delete to authenticated using (auth.uid() = user_id);
+
+-- 이미 표가 있던 경우를 위해 순서 칸을 추가합니다.
+alter table public.cart_items add column if not exists position integer not null default 0;
+
+grant select, insert, update, delete on public.cart_items to authenticated;
+
+-- 장바구니 전체를 한 번에 바꿉니다. (사이트에서 부릅니다)
+-- items 모양 : [{"id": 상품번호, "count": 수량}, ...]
+create or replace function public.set_cart(items jsonb)
+returns void
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+begin
+  if auth.uid() is null then
+    raise exception '로그인이 필요합니다.';
+  end if;
+
+  delete from public.cart_items where user_id = auth.uid();
+
+  insert into public.cart_items (user_id, product_id, count, position)
+  select auth.uid(), (e ->> 'id')::integer, least((e ->> 'count')::integer, 99), n::integer
+  from jsonb_array_elements(items) with ordinality as t(e, n)
+  where (e ->> 'count')::integer > 0
+    and exists (select 1 from public.products p where p.id = (e ->> 'id')::integer);
+end;
+$$;
+
+revoke execute on function public.set_cart(jsonb) from public, anon;
+grant execute on function public.set_cart(jsonb) to authenticated;
