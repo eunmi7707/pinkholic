@@ -192,6 +192,45 @@ var PRODUCTS = [
     hideOnAll: true,
     desc: "귀에 붙는 알 진주 귀걸이입니다. 매일 착용해도 부담이 없고, 어떤 옷에도 어울려 처음 사는 진주로 많이 고르십니다.",
     points: ["진주 8 mm", "은침 (알레르기 완화)", "한 쌍"]
+  },
+  {
+    id: 14,
+    name: "크림 루프 니트 머플러",
+    category: "패션소품",
+    oldPrice: 69000,
+    price: 55800,
+    img: "https://images.unsplash.com/photo-1577482636911-cbb53a3dc843?w=900",
+    badge: "",
+    big: false,
+    hideOnAll: true,
+    desc: "보송한 실로 짠 크림색 니트 머플러입니다. 목에 한 번만 둘러도 얼굴 아래가 포근하게 채워지고, 밝은 색이라 어두운 겨울 외투에 얼굴빛을 살려줍니다.",
+    points: ["가로 30 x 세로 180 cm", "울 50% / 아크릴 50%", "손세탁 또는 드라이클리닝"]
+  },
+  {
+    id: 15,
+    name: "데일리 니트 머플러 3종 세트",
+    category: "패션소품",
+    oldPrice: 89000,
+    price: 72000,
+    img: "https://images.unsplash.com/photo-1457545195570-67f207084966?w=900",
+    badge: "",
+    big: false,
+    hideOnAll: true,
+    desc: "그레이, 그린, 화이트 니트 머플러 세 개를 한 세트로 묶었습니다. 그날 옷 색에 맞춰 골라 두르시면 되고, 하나는 선물용으로 나누셔도 좋습니다.",
+    points: ["그레이 / 그린 / 화이트 (한 세트)", "울 30% / 아크릴 70%", "손세탁 가능"]
+  },
+  {
+    id: 16,
+    name: "블랙 패턴 롱 머플러",
+    category: "패션소품",
+    oldPrice: 78000,
+    price: 63100,
+    img: "https://images.unsplash.com/photo-1652371845177-057765101de2?w=900",
+    badge: "",
+    big: false,
+    hideOnAll: true,
+    desc: "검정 바탕에 회색 무늬를 넣은 얇고 긴 머플러입니다. 두껍지 않아 가을부터 초봄까지 쓰기 좋고, 길게 늘어뜨리면 단조로운 코트에 포인트가 됩니다.",
+    points: ["가로 70 x 세로 200 cm", "울 30% / 레이온 70%", "드라이클리닝 권장"]
   }
 ];
 
